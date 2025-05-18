@@ -1,0 +1,1 @@
+Use the best practices for writing release notes. Write it in [CHANGELOG](CHANGELOG.md). Use [src](src/) as a guide for it. Use the commits for create it
