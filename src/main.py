@@ -110,12 +110,11 @@ def main():
         sample = ImageDissector(image_path=args.image_path)
         output_dir = os.path.abspath(args.output)
 
-        sample.write_response(dest_path=output_dir, filename=args.filename)
-
-        print(
-            f"Response written to {os.path.join(output_dir, args.filename)} "
-            f"for image: {args.image_path}"
+        actual_output_path = sample.write_response(
+            dest_path=output_dir, fallback_filename=args.filename
         )
+
+        print(f"Response written to {actual_output_path} for image: {args.image_path}")
     except FileNotFoundError:
         print(f"Error: Image file not found at {args.image_path}")
         sys.exit(1)
