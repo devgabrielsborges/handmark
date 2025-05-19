@@ -1,11 +1,14 @@
 name: CI/CD Pipeline
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
       - main
     tags:
-      - "v*" # Run when version tags are pushed
+      - "v*"
 
 jobs:
   test:
