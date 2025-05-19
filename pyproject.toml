@@ -11,6 +11,8 @@ dependencies = [
     "azure-ai-inference>=1.0.0b9",
     "python-dotenv>=1.1.0",
     "requests>=2.32.3",
+    "pytest",
+    "pytest-mock",
 ]
 
 [project.urls]
