@@ -15,7 +15,7 @@
 ## Installation
 
 ```bash
-pip install .
+pip install handmark
 ```
 
 ---
@@ -25,10 +25,10 @@ pip install .
 To use Handmark, run the following command in your terminal:
 
 ```bash
-handmark <image_path>
+handmark --image <image_path>
 ```
 
-Replace `<image_path>` with the path to the image file you want to convert. The output will be saved as `response.md` in the current directory.
+Replace `<image_path>` with the path to the image file you want to convert. The output will be saved in the current directory.
 
 ### Configure GitHub Token
 
@@ -89,13 +89,13 @@ This project uses `uv` for package management.
 2. Install dependencies:
 
    ```bash
-   uv pip install -e .
+   uv pip install handmark
    ```
 
    or
 
    ```bash
-   pip install -e .
+   pip install handmark
    ```
 
 ---
