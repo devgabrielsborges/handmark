@@ -11,18 +11,16 @@ def handle_conf():
     if raw_token_input:
         cleaned_token = raw_token_input.strip()
 
-        env_dir = os.path.join(os.path.expanduser("~"), ".config", "handmark")
-        env_path = os.path.join(env_dir, ".env")
+        project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        env_path = os.path.join(project_dir, ".env")
 
         try:
-            os.makedirs(env_dir, exist_ok=True)
             with open(env_path, "w") as f:
-                f.write(f"GITHUB_TOKEN={cleaned_token}\\n")
+                f.write(f"GITHUB_TOKEN={cleaned_token}\n")
             print(f"Token stored in {env_path}.")
-            print("Please ensure this file is loaded by your shell or application.")
-            print("You might need to restart your shell or source the .env file.")
+            print("Configuration complete.")
         except OSError as e:
-            print(f"Error creating directory or writing file at {env_path}: {e}")
+            print(f"Error writing file at {env_path}: {e}")
             return
     else:
         print("No token provided. Configuration cancelled.")
@@ -70,21 +68,23 @@ def main():
         sys.exit(0)
     elif args.command:
         parser.print_help()
-        print(f"\\nError: Unknown command '{args.command}'.")
+        print(f"\nError: Unknown command '{args.command}'.")
         sys.exit(1)
     elif args.image_path:
         pass
     else:
         parser.print_help()
         error_msg = (
-            "\\nError: You must provide an image path using --image <path> "
+            "\nError: You must provide an image path using --image <path> "
             "or specify a subcommand (e.g., 'conf')."
         )
         print(error_msg)
         sys.exit(1)
 
     github_token_env = os.getenv("GITHUB_TOKEN")
-    dotenv_path = os.path.join(os.path.expanduser("~"), ".config", "handmark", ".env")
+
+    project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    dotenv_path = os.path.join(project_dir, ".env")
 
     if not github_token_env:
         if os.path.exists(dotenv_path):
@@ -96,7 +96,7 @@ def main():
         if not github_token_env:
             error_message = (
                 "Error: GITHUB_TOKEN environment variable not set and not found "
-                "in default path."
+                "in project directory."
             )
             guidance_message = (
                 f"Please set it, use 'handmark conf', or ensure {dotenv_path} "
