@@ -134,7 +134,7 @@ def test_write_response_with_derived_filename(
 def test_write_response_with_fallback_filename(
     mock_makedirs, mock_file_open, mock_get_response, dissector_instance
 ):
-    mock_get_response.return_value = "" m
+    mock_get_response.return_value = ""
 
     fallback_filename = "response.md"
     expected_dest_path = "./output_dir"
