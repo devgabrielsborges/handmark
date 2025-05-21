@@ -1,6 +1,6 @@
 [project]
 name = "handmark"
-version = "0.3"
+version = "0.3.1"
 description = "Handnotes to markdown in seconds"
 readme = "README.md"
 requires-python = ">=3.10"
