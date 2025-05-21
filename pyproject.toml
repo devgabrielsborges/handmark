@@ -1,6 +1,6 @@
 [project]
 name = "handmark"
-version = "0.2.1"
+version = "0.2.2"
 description = "Handnotes to markdown in seconds"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,6 +13,8 @@ dependencies = [
     "requests>=2.32.3",
     "pytest",
     "pytest-mock",
+    "typer>=0.15.4",
+    "rich>=14.0.0",
 ]
 
 [project.urls]
@@ -20,4 +22,4 @@ dependencies = [
 "Bug Tracker" = "https://github.com/devgabrielsborges/handmark/issues"
 
 [project.scripts]
-handmark = "main:main"
+handmark = "src.main:main"
