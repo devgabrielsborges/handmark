@@ -1,127 +1,118 @@
+from pathlib import Path
+import typer
+from rich.panel import Panel
+from rich.text import Text
 from dissector import ImageDissector
-import sys
-import argparse
-import os
+from utils import (
+    console,
+    save_github_token,
+    validate_image_path,
+    validate_github_token,
+    format_success_message,
+)
+
+app = typer.Typer(
+    help="Transforms handwritten images into Markdown files.",
+    add_completion=False,
+)
 
 
-def handle_conf():
-    """Handles the configuration for the GitHub token."""
-    print("Configuring GitHub token...")
-    raw_token_input = input("Please enter your GitHub token: ")
+@app.command("auth")
+def handle_auth():
+    """Configure GitHub token for the application."""
+    console.print(Panel("Configuring GitHub token...", style="blue"))
+
+    raw_token_input = typer.prompt("Please enter your GitHub token", hide_input=True)
+
     if raw_token_input:
-        cleaned_token = raw_token_input.strip()
-
-        project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        env_path = os.path.join(project_dir, ".env")
-
-        try:
-            with open(env_path, "w") as f:
-                f.write(f"GITHUB_TOKEN={cleaned_token}\n")
-            print(f"Token stored in {env_path}.")
-            print("Configuration complete.")
-        except OSError as e:
-            print(f"Error writing file at {env_path}: {e}")
-            return
+        success, message = save_github_token(raw_token_input)
+        if success:
+            console.print(f"[green]Token stored in {message}[/green]")
+            console.print("[green]Configuration complete.[/green]")
+        else:
+            console.print(f"[red]{message}[/red]")
     else:
-        print("No token provided. Configuration cancelled.")
+        console.print("[yellow]No token provided. Configuration cancelled.[/yellow]")
+
+
+@app.command("digest")
+def digest(
+    image_path: Path = typer.Argument(
+        ..., help="Path to the image file to process.", show_default=False
+    ),
+    output: Path = typer.Option(
+        "./", "-o", "--output", help="Directory to save the Markdown file (default: current directory)."
+    ),
+    filename: str = typer.Option(
+        "response.md", "--filename", help="Name of the output Markdown file (default: response.md)."
+    ),
+):
+    """Process a handwritten image and convert it to Markdown."""
+    valid_path, error_msg = validate_image_path(image_path)
+    if not valid_path:
+        console.print(f"[red]Error: {error_msg}[/red]")
+        raise typer.Exit(code=1)
+
+    token_valid, error_msg, guidance_msg = validate_github_token()
+    if not token_valid:
+        console.print(Text(error_msg, style="red"))
+        console.print(Text(guidance_msg, style="yellow"))
+        raise typer.Exit(code=1)
+
+    # Process image
+    with console.status("[bold green]Processing image...[/bold green]"):
+        try:
+            sample = ImageDissector(image_path=str(image_path))
+            output_dir = output.absolute()
+
+            actual_output_path = sample.write_response(
+                dest_path=str(output_dir), fallback_filename=filename
+            )
+
+            console.print(format_success_message(actual_output_path, image_path))
+        except FileNotFoundError as e:
+            console.print(f"[red]File not found: {e}[/red]")
+            raise typer.Exit(code=1)
+        except PermissionError as e:
+            console.print(f"[red]Permission error: {e}[/red]")
+            raise typer.Exit(code=1)
+        except ValueError as e:
+            console.print(f"[red]Value error: {e}[/red]")
+            raise typer.Exit(code=1)
+        except Exception as e:
+            console.print(f"[red]An unexpected error occurred: {e}[/red]")
+            raise typer.Exit(code=1)
+
+
+@app.callback(invoke_without_command=True)
+def callback(
+    ctx: typer.Context,
+    version: bool = typer.Option(False, "--version", "-v", help="Show version and exit."),
+):
+    """Handmark - Transform handwritten notes into Markdown.
+
+    A simple CLI tool to convert handwritten images to Markdown text using AI.
+    Run 'handmark digest <image_path>' to process an image or 'handmark auth' to set up your GitHub token.
+    """
+    if version:
+        from importlib.metadata import version as get_version
+        try:
+            app_version = get_version("handmark")
+            console.print(f"[bold blue]Handmark[/bold blue] version: [green]{app_version}[/green]")
+        except Exception:
+            console.print("[bold blue]Handmark[/bold blue] [yellow]development version[/yellow]")
+        raise typer.Exit()
+
+    if ctx.invoked_subcommand is None:
+        console.print(ctx.get_help())
+        raise typer.Exit()
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Transforms handwritten images into Markdown files.", add_help=True
-    )
-
-    parser.add_argument(
-        "--image",
-        dest="image_path",
-        metavar="<image_path>",
-        help="Path to the image file to process.",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        default="./",
-        help="Directory to save the Markdown file (default: current directory).",
-    )
-    parser.add_argument(
-        "--filename",
-        default="response.md",
-        help="Name of the output Markdown file (default: response.md).",
-    )
-
-    subparsers = parser.add_subparsers(
-        dest="command",
-        title="Available Subcommands",
-        help="For more help on a subcommand, run `handmark <subcommand> --help`",
-        required=False,
-        metavar="<command>",
-    )
-
-    _ = subparsers.add_parser(
-        "conf", help="Configure GitHub token for the application."
-    )
-
-    args = parser.parse_args()
-
-    if args.command == "conf":
-        handle_conf()
-        sys.exit(0)
-    elif args.command:
-        parser.print_help()
-        print(f"\nError: Unknown command '{args.command}'.")
-        sys.exit(1)
-    elif args.image_path:
-        pass
-    else:
-        parser.print_help()
-        error_msg = (
-            "\nError: You must provide an image path using --image <path> "
-            "or specify a subcommand (e.g., 'conf')."
-        )
-        print(error_msg)
-        sys.exit(1)
-
-    github_token_env = os.getenv("GITHUB_TOKEN")
-
-    project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dotenv_path = os.path.join(project_dir, ".env")
-
-    if not github_token_env:
-        if os.path.exists(dotenv_path):
-            from dotenv import load_dotenv
-
-            load_dotenv(dotenv_path)
-            github_token_env = os.getenv("GITHUB_TOKEN")
-
-        if not github_token_env:
-            error_message = (
-                "Error: GITHUB_TOKEN environment variable not set and not found "
-                "in project directory."
-            )
-            guidance_message = (
-                f"Please set it, use 'handmark conf', or ensure {dotenv_path} "
-                "exists and is readable."
-            )
-            print(error_message)
-            print(guidance_message)
-            sys.exit(1)
-
-    try:
-        sample = ImageDissector(image_path=args.image_path)
-        output_dir = os.path.abspath(args.output)
-
-        actual_output_path = sample.write_response(
-            dest_path=output_dir, fallback_filename=args.filename
-        )
-
-        print(f"Response written to {actual_output_path} for image: {args.image_path}")
-    except FileNotFoundError:
-        print(f"Error: Image file not found at {args.image_path}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        sys.exit(1)
+    """Entry point function that calls the app."""
+    app()
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    app()
