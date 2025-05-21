@@ -90,7 +90,7 @@ def callback(
     version: bool = typer.Option(False, "--version", "-v", help="Show version and exit."),
 ):
     """Handmark - Transform handwritten notes into Markdown.
-    
+
     A simple CLI tool to convert handwritten images to Markdown text using AI.
     Run 'handmark digest <image_path>' to process an image or 'handmark auth' to set up your GitHub token.
     """
@@ -99,10 +99,10 @@ def callback(
         try:
             app_version = get_version("handmark")
             console.print(f"[bold blue]Handmark[/bold blue] version: [green]{app_version}[/green]")
-        except:
+        except Exception:
             console.print("[bold blue]Handmark[/bold blue] [yellow]development version[/yellow]")
         raise typer.Exit()
-    
+
     if ctx.invoked_subcommand is None:
         console.print(ctx.get_help())
         raise typer.Exit()
@@ -112,7 +112,7 @@ def main():
     """Entry point function that calls the app."""
     app()
     return 0
-    
+
 
 if __name__ == "__main__":
     app()
