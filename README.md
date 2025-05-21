@@ -1,14 +1,19 @@
 # Handmark
 
-**Handmark** is a Python CLI tool that converts handwritten notes from images into Markdown files. It uses AI to process the images and extract the text.
+**Handmark** is a Python CLI tool that converts handwritten notes from images into Markdown files. It uses Azure AI to process images and extract text, making it easy to digitize handwritten content.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.3-blue)](https://github.com/devgabrielsborges/handmark)
 
 ---
 
 ## Features
 
-* Converts images of handwritten notes to Markdown.
-* Simple CLI interface.
-* Uses Azure AI for image processing.
+* Converts images of handwritten notes to Markdown format
+* Intelligent title extraction from content
+* Easy-to-use CLI interface
+* Uses Azure AI for accurate image processing
+* Automatically formats output as valid Markdown
 
 ---
 
@@ -18,31 +23,47 @@
 pip install handmark
 ```
 
+You can also install using `uv`:
+
+```bash
+uv pip install handmark
+```
+
 ---
 
 ## Usage
 
-To use Handmark, run the following command in your terminal:
+Handmark provides a simple CLI with the following commands:
+
+### Process an Image
 
 ```bash
-handmark --image <image_path>
+handmark digest <image_path> [options]
 ```
 
-Replace `<image_path>` with the path to the image file you want to convert. The output will be saved in the current directory.
+Options:
+- `-o, --output <directory>` - Specify output directory (default: current directory)
+- `--filename <name>` - Custom output filename (default: response.md)
 
-### Configure GitHub Token
-
-You can configure the GitHub token using the `conf` subcommand:
+### Configure Authentication
 
 ```bash
-handmark conf
+handmark auth
 ```
 
-This will prompt you to enter your GitHub token, which will be stored for future use.
+This will prompt you to enter your GitHub token, which is required for Azure AI integration. The token is securely stored in a `.env` file in the project directory.
+
+### Check Version
+
+```bash
+handmark --version
+```
 
 ---
 
 ## Example
+
+Here's a real-world example of Handmark in action:
 
 **Input image** (`samples/prova.jpeg`):
 
@@ -68,37 +89,62 @@ Leia atentamente todas as questões antes de começar a prova. As respostas obti
 5. (2 pontos) Sabendo que E é o volume do sólido delimitado pelo cilindro parabólico z = x² + y² e pelo plano z = 1, apresente um esboço deste volume e calcule o valor de E.
 ```
 
+The output is saved as a Markdown file with a filename derived from the detected title.
 
-[Link to prova-response.md](prova-response.md)
+[See the full example output](prova-response.md)
 
 ---
 
 ## Development
 
-This project uses `uv` for package management.
+### Prerequisites
+
+- Python 3.10 or higher
+- A GitHub token for Azure AI integration
 
 ### Setup
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/handmark.git
+   git clone https://github.com/devgabrielsborges/handmark.git
    cd handmark
    ```
 
 2. Install dependencies:
 
    ```bash
-   uv pip install handmark
+   pip install -e .
    ```
 
-   or
+### Running Tests
 
-   ```bash
-   pip install handmark
-   ```
+```bash
+pytest
+```
+
+### Project Structure
+
+- `src/` - Source code
+  - `main.py` - CLI interface
+  - `dissector.py` - Image processing and API interaction
+  - `utils.py` - Helper functions
+- `samples/` - Sample images for testing
+- `tests/` - Unit tests
 
 ---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+- Gabriel Borges ([@devgabrielsborges](https://github.com/devgabrielsborges))
+
+---
+
+*Last updated: May 20, 2025*
 
 ## Contributing
 

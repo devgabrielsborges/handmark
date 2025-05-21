@@ -4,7 +4,24 @@
 
 ### Added
 
-- Initial release of handmark.
+- Future improvements will be added here.
+
+## [0.3.0] - 2025-05-20
+
+### Added
+
+- Complete CLI interface with `digest` and `auth` commands
+- Azure AI integration for image processing via GitHub token authentication
+- Automatic title extraction from content for smart file naming
+- Markdown formatting for output files
+- Smart error handling and user feedback with rich console output
+- Detailed documentation and usage examples
+
+### Changed
+
+- Improved project structure with separate modules for image processing, utilities, and CLI
+- Enhanced environment variable management with dotenv support
+- Better error messages and user guidance for authentication issues
 
 ## [0.1.0] - 2025-05-18
 
