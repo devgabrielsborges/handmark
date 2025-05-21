@@ -22,4 +22,4 @@ dependencies = [
 "Bug Tracker" = "https://github.com/devgabrielsborges/handmark/issues"
 
 [project.scripts]
-handmark = "src.main:main"
+handmark = "main:main"
