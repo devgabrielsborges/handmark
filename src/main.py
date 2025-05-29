@@ -120,16 +120,14 @@ def digest(
             f"[blue]Using model: {selected_model.name} ({selected_model.provider})[/blue]"
         )
 
-    # Process image
     with console.status("[bold green]Processing image...[/bold green]"):
         try:
-            sample = ImageDissector(image_path=str(image_path), model=selected_model)
+            sample = ImageDissector(image_path=str(image_path), model=selected_model.name)
             output_dir = output.absolute()
 
             actual_output_path = sample.write_response(
                 dest_path=str(output_dir),
-                response_filename=filename,
-                overwrite=True,
+                fallback_filename=filename,
             )
 
             console.print(f"[green]✓ Image processed successfully![/green]")
