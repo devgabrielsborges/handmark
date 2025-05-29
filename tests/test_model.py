@@ -30,20 +30,23 @@ def mock_config_home(monkeypatch):
 
 
 def test_model_creation():
-    model = Model("test-model", "TestProvider", "100 req/day")
+    model = Model("test-model", "Test Model", "TestProvider", "100 req/day")
     assert model.name == "test-model"
+    assert model.pretty_name == "Test Model"
     assert model.provider == "TestProvider"
     assert model.rate_limit == "100 req/day"
-    assert str(model) == "test-model | TestProvider | 100 req/day"
+    assert str(model) == "Test Model | TestProvider | 100 req/day"
 
 
 def test_model_to_dict():
-    model = Model("test-model", "TestProvider", "100 req/day")
-    assert model.to_dict() == {
+    model = Model("test-model", "Test Model", "TestProvider", "100 req/day")
+    expected = {
         "name": "test-model",
+        "pretty_name": "Test Model",
         "provider": "TestProvider",
-        "rate_limit": "100 req/day",
+        "rate_limit": "100 req/day"
     }
+    assert model.to_dict() == expected
 
 
 def test_model_from_dict():
@@ -65,13 +68,13 @@ def test_get_available_models():
     for model in models:
         assert isinstance(model, Model)
     # Check for a known model (example, adjust if default list changes)
-    assert any(m.name == "Phi-4-multimodal-instruct" for m in models)
+    assert any(m.name == "microsoft/Phi-4-multimodal-instruct" for m in models)
 
 
 def test_get_default_model():
     model = get_default_model()
     assert isinstance(model, Model)
-    assert model.name == "gpt-4o" # As per src/model.py
+    assert model.name == "openai/gpt-4o" # Updated to match the actual model name
     assert model.provider == "OpenAI"
     assert model.rate_limit == "500 requests/day"
 
@@ -81,7 +84,7 @@ def test_get_default_model():
 def test_save_selected_model_success(mock_file_open, mock_json_dump, mock_config_home):
     mock_handmark_dir, mock_config_file = mock_config_home
 
-    model_to_save = Model("gpt-4.1-mini", "OpenAI", "150 requests/day")
+    model_to_save = Model("openai/gpt-4o-mini", "GPT-4o Mini", "OpenAI", "150 requests/day")
     success = save_selected_model(model_to_save)
 
     assert success is True
@@ -95,7 +98,7 @@ def test_save_selected_model_success(mock_file_open, mock_json_dump, mock_config
 @patch("builtins.open", side_effect=OSError("Cannot write"))
 def test_save_selected_model_failure(mock_file_open_failure, mock_config_home):
     # This test ensures that if 'open' fails, save_selected_model returns False
-    model_to_save = Model("gpt-4.1-mini", "OpenAI", "150 requests/day")
+    model_to_save = Model("openai/gpt-4o-mini", "GPT-4o Mini", "OpenAI", "150 requests/day")
     success = save_selected_model(model_to_save)
     assert success is False
 
