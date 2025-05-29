@@ -46,12 +46,12 @@ def save_selected_model(model: Model) -> bool:
         config_dir = Path.home() / ".config" / "handmark"
         config_dir.mkdir(parents=True, exist_ok=True)
         config_file = config_dir / "config.json"
-        
+
         config = {"selected_model": model.to_dict()}
-        
+
         with open(config_file, "w") as f:
             json.dump(config, f, indent=2)
-        
+
         return True
     except Exception:
         return False
@@ -65,13 +65,13 @@ def load_selected_model() -> Optional[Model]:
 
         if not config_file.exists():
             return None
- 
+
         with open(config_file, "r") as f:
             config = json.load(f)
-  
+
         if "selected_model" in config:
             return Model.from_dict(config["selected_model"])
-   
+
         return None
     except (FileNotFoundError, json.JSONDecodeError, KeyError, OSError):
         return None
