@@ -16,10 +16,35 @@ from utils import (
     validate_github_token,
 )
 
+
+def version_callback(value: bool):
+    if value:
+        console.print("handmark version 0.3.3")
+        raise typer.Exit()
+
+
 app = typer.Typer(
     help="Transforms handwritten images into Markdown files.",
     add_completion=False,
+    context_settings={"help_option_names": ["-h", "--help"]}
 )
+
+
+@app.callback(invoke_without_command=True)
+def main_callback(
+    ctx: typer.Context,
+    version: bool = typer.Option(
+        None,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show version and exit.",
+    ),
+):
+    """Main callback for the application."""
+    if ctx.invoked_subcommand is None:
+        console.print(ctx.get_help())
+        raise typer.Exit()
 
 
 @app.command("auth")
