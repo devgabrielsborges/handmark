@@ -53,6 +53,14 @@ handmark auth
 
 This will prompt you to enter your GitHub token, which is required for Azure AI integration. The token is securely stored in a `.env` file in the project directory.
 
+### Configure Model
+
+```bash
+handmark conf
+```
+
+This command lets you select and configure the AI model used for image processing. You can choose from available models, and your selection will be saved for future runs.
+
 ### Check Version
 
 ```bash
