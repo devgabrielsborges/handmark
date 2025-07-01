@@ -1,5 +1,10 @@
 import os
 import re
+import json
+import yaml
+import xml.etree.ElementTree as ET
+from pathlib import Path
+from typing import Dict, Any
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import (
     SystemMessage,
@@ -13,9 +18,17 @@ from azure.core.credentials import AzureKeyCredential
 
 
 class ImageDissector:
-    def __init__(self, image_path: str, model: str = "microsoft/Phi-3.5-vision-instruct"):
+    def __init__(
+        self,
+        image_path: str,
+        model: str = "microsoft/Phi-3.5-vision-instruct",
+        output_format: str = "markdown",
+    ):
         self.image_path = image_path
         self.image_format = image_path.split(".")[-1]
+        self.output_format = output_format.lower()
+        self._load_config()
+
         raw_token = os.getenv("GITHUB_TOKEN")
         if raw_token:
             self._token = raw_token.strip()
@@ -31,8 +44,27 @@ class ImageDissector:
             credential=AzureKeyCredential(self._token),
         )
 
+    def _load_config(self) -> None:
+        """Load configuration from config.json file"""
+        config_path = Path(__file__).parent.parent / "config" / "config.json"
+        try:
+            with open(config_path, "r") as f:
+                self.config = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            raise ValueError(f"Could not load config file: {e}")
+
+        if self.output_format not in self.config["output_formats"]:
+            available_formats = list(self.config["output_formats"].keys())
+            raise ValueError(
+                f"Unknown output format '{self.output_format}'. Available formats: {available_formats}"
+            )
+
+    def _get_format_config(self) -> Dict[str, Any]:
+        """Get configuration for the current output format"""
+        return self.config["output_formats"][self.output_format]
+
     def _sanitize_filename(self, name: str) -> str:
-        """Converts a string to a safe filename."""
+        """Converts a string to a safe filename with the appropriate extension."""
         if not name:
             return ""
 
@@ -50,18 +82,14 @@ class ImageDissector:
         if not name:
             return ""
 
-        return f"{name}.md"
+        extension = self._get_file_extension()
+        return f"{name}{extension}"
 
     def get_response(self) -> str:
-        system_message_content = (
-            "You are a helpful assistant that transforms "
-            "handwritten images in Markdown files."
-        )
-        user_message_text = (
-            "Give to me a Markdown of this text on the image and only this."
-            "Add a title for it, that must be the first line of the response ."
-            "Do not describe the image."
-        )
+        format_config = self._get_format_config()
+        system_message_content = format_config["system_message_content"]
+        user_message_text = format_config["user_message_content"]
+
         response = self._client.complete(
             messages=[
                 SystemMessage(content=system_message_content),
@@ -83,26 +111,117 @@ class ImageDissector:
 
         return response.choices[0].message.content
 
+    def _process_content(self, raw_content: str) -> str:
+        """Process the raw content based on the output format"""
+        if self.output_format == "markdown":
+            return raw_content
+        elif self.output_format == "json":
+            return self._process_json_content(raw_content)
+        elif self.output_format == "yaml":
+            return self._process_yaml_content(raw_content)
+        elif self.output_format == "xml":
+            return self._process_xml_content(raw_content)
+        else:
+            return raw_content
+
+    def _process_json_content(self, content: str) -> str:
+        """Process and validate JSON content"""
+        try:
+            parsed = json.loads(content)
+            format_config = self._get_format_config()
+            return json.dumps(
+                parsed,
+                indent=2 if format_config.get("pretty_print", True) else None,
+                ensure_ascii=not format_config.get("ensure_ascii", False),
+            )
+        except json.JSONDecodeError:
+            # If it's not valid JSON, return as-is
+            return content
+
+    def _process_yaml_content(self, content: str) -> str:
+        """Process and validate YAML content"""
+        try:
+            parsed = yaml.safe_load(content)
+            format_config = self._get_format_config()
+            return yaml.dump(
+                parsed,
+                default_flow_style=format_config.get("default_flow_style", False),
+                allow_unicode=format_config.get("allow_unicode", True),
+            )
+        except yaml.YAMLError:
+            return content
+
+    def _process_xml_content(self, content: str) -> str:
+        """Process and validate XML content"""
+        try:
+            root = ET.fromstring(content)
+            format_config = self._get_format_config()
+            if format_config.get("pretty_print", True):
+                ET.indent(root, space="  ")
+            return ET.tostring(root, encoding="unicode")
+        except ET.ParseError:
+            return content
+
+    def _get_file_extension(self) -> str:
+        """Get the file extension for the current format"""
+        format_config = self._get_format_config()
+        return format_config["file_extension"]
+
     def write_response(
-        self, dest_path: str = "./", fallback_filename: str = "response.md"
+        self, dest_path: str = "./", fallback_filename: str = None
     ) -> str:
-        markdown_content = self.get_response()
+        raw_content = self.get_response()
+        processed_content = self._process_content(raw_content)
+
+        if fallback_filename is None:
+            extension = self._get_file_extension()
+            fallback_filename = f"response{extension}"
 
         final_filename_to_use = fallback_filename
 
-        if markdown_content:
-            lines = markdown_content.splitlines()
-            if lines:
-                title_candidate = lines[0].strip()
-                if title_candidate:
-                    derived_filename = self._sanitize_filename(title_candidate)
-                    if derived_filename:
-                        final_filename_to_use = derived_filename
+        if processed_content:
+            if self.output_format == "markdown":
+                lines = processed_content.splitlines()
+                if lines:
+                    title_candidate = lines[0].strip()
+                    if title_candidate.startswith("#"):
+                        title_candidate = title_candidate.lstrip("#").strip()
+                    if title_candidate:
+                        derived_filename = self._sanitize_filename(title_candidate)
+                        if derived_filename:
+                            final_filename_to_use = derived_filename
+
+            elif self.output_format in ["json", "yaml"]:
+                try:
+                    if self.output_format == "json":
+                        data = json.loads(processed_content)
+                    else:
+                        data = yaml.safe_load(processed_content)
+
+                    if isinstance(data, dict) and "title" in data:
+                        title = data["title"]
+                        if title and isinstance(title, str):
+                            derived_filename = self._sanitize_filename(title)
+                            if derived_filename:
+                                final_filename_to_use = derived_filename
+                except (json.JSONDecodeError, yaml.YAMLError):
+                    pass
+
+            elif self.output_format == "xml":
+                try:
+                    root = ET.fromstring(processed_content)
+                    title_elem = root.find(".//title")
+                    if title_elem is not None and title_elem.text:
+                        derived_filename = self._sanitize_filename(title_elem.text)
+                        if derived_filename:
+                            final_filename_to_use = derived_filename
+                except ET.ParseError:
+                    pass
 
         os.makedirs(dest_path, exist_ok=True)
         full_output_path = os.path.join(dest_path, final_filename_to_use)
 
-        with open(full_output_path, "w") as f:
-            f.write(markdown_content if markdown_content else "")
+        with open(full_output_path, "w", encoding="utf-8") as f:
+            f.write(processed_content if processed_content else "")
 
         return full_output_path
