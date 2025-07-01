@@ -13,7 +13,7 @@ from azure.core.credentials import AzureKeyCredential
 
 
 class ImageDissector:
-    def __init__(self, image_path: str, model: str = "openai/gpt-4o"):
+    def __init__(self, image_path: str, model: str = "microsoft/Phi-3.5-vision-instruct"):
         self.image_path = image_path
         self.image_format = image_path.split(".")[-1]
         raw_token = os.getenv("GITHUB_TOKEN")
