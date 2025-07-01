@@ -14,3 +14,5 @@ wheels/
 *.lock
 
 .github/responses/*
+
+idea/
