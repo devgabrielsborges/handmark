@@ -127,7 +127,8 @@ class ImageDissector:
     def _process_json_content(self, content: str) -> str:
         """Process and validate JSON content"""
         try:
-            parsed = json.loads(content)
+            clean_content = self._strip_code_blocks(content, "json")
+            parsed = json.loads(clean_content)
             format_config = self._get_format_config()
             return json.dumps(
                 parsed,
@@ -141,7 +142,8 @@ class ImageDissector:
     def _process_yaml_content(self, content: str) -> str:
         """Process and validate YAML content"""
         try:
-            parsed = yaml.safe_load(content)
+            clean_content = self._strip_code_blocks(content, "yaml")
+            parsed = yaml.safe_load(clean_content)
             format_config = self._get_format_config()
             return yaml.dump(
                 parsed,
@@ -154,7 +156,8 @@ class ImageDissector:
     def _process_xml_content(self, content: str) -> str:
         """Process and validate XML content"""
         try:
-            root = ET.fromstring(content)
+            clean_content = self._strip_code_blocks(content, "xml")
+            root = ET.fromstring(clean_content)
             format_config = self._get_format_config()
             if format_config.get("pretty_print", True):
                 ET.indent(root, space="  ")
@@ -166,6 +169,30 @@ class ImageDissector:
         """Get the file extension for the current format"""
         format_config = self._get_format_config()
         return format_config["file_extension"]
+
+    def _strip_code_blocks(self, content: str, format_type: str) -> str:
+        """Strip markdown code blocks from content if present"""
+        lines = content.strip().splitlines()
+
+        # Check if content is wrapped in code blocks
+        if len(lines) >= 2:
+            first_line = lines[0].strip()
+            last_line = lines[-1].strip()
+
+            code_block_markers = [
+                f"```{format_type}",
+                f"```{format_type.upper()}",
+                "```",
+            ]
+
+            if (
+                any(first_line.startswith(marker) for marker in code_block_markers)
+                and last_line == "```"
+            ):
+                # Remove first and last lines (code block markers)
+                return "\n".join(lines[1:-1])
+
+        return content
 
     def write_response(
         self, dest_path: str = "./", fallback_filename: str = None
@@ -193,10 +220,14 @@ class ImageDissector:
 
             elif self.output_format in ["json", "yaml"]:
                 try:
+                    content_to_parse = self._strip_code_blocks(
+                        processed_content, self.output_format
+                    )
+
                     if self.output_format == "json":
-                        data = json.loads(processed_content)
+                        data = json.loads(content_to_parse)
                     else:
-                        data = yaml.safe_load(processed_content)
+                        data = yaml.safe_load(content_to_parse)
 
                     if isinstance(data, dict) and "title" in data:
                         title = data["title"]
@@ -209,12 +240,41 @@ class ImageDissector:
 
             elif self.output_format == "xml":
                 try:
-                    root = ET.fromstring(processed_content)
+                    content_to_parse = self._strip_code_blocks(
+                        processed_content, self.output_format
+                    )
+                    root = ET.fromstring(content_to_parse)
+
+                    # First, try to find a title element
                     title_elem = root.find(".//title")
+                    title_text = None
+
                     if title_elem is not None and title_elem.text:
-                        derived_filename = self._sanitize_filename(title_elem.text)
+                        title_text = title_elem.text.strip()
+                    else:
+                        # Fallback: try to extract meaningful content
+                        # Look for content element and use first few words
+                        content_elem = root.find(".//content")
+                        if content_elem is not None and content_elem.text:
+                            content_text = content_elem.text.strip()
+                            if content_text:
+                                # Use first 3-5 words as title
+                                words = content_text.split()[:4]
+                                title_text = " ".join(words)
+
+                        # If still no title, use the root element's first text content
+                        if not title_text:
+                            for elem in root.iter():
+                                if elem.text and elem.text.strip():
+                                    words = elem.text.strip().split()[:3]
+                                    title_text = " ".join(words)
+                                    break
+
+                    if title_text:
+                        derived_filename = self._sanitize_filename(title_text)
                         if derived_filename:
                             final_filename_to_use = derived_filename
+
                 except ET.ParseError:
                     pass
 
