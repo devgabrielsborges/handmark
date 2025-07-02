@@ -9,7 +9,7 @@ from model import (
     load_selected_model,
     get_default_model,
 )
-from src.utils import (
+from utils import (
     console,
     save_github_token,
     validate_image_path,
