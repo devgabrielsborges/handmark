@@ -2,8 +2,8 @@ from pathlib import Path
 import typer
 from rich.panel import Panel
 from rich.text import Text
-from src.dissector import ImageDissector
-from src.model import (
+from dissector import ImageDissector
+from model import (
     get_available_models,
     save_selected_model,
     load_selected_model,
