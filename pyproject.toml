@@ -1,7 +1,7 @@
 [project]
 name = "handmark"
-version = "0.3.2.1"
-description = "Handnotes to markdown in seconds"
+version = "0.4.0"
+description = "Transform handwritten images into structured documents (Markdown, JSON, YAML, XML)"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [

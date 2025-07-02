@@ -19,12 +19,12 @@ from src.utils import (
 
 def version_callback(value: bool):
     if value:
-        console.print("handmark version 0.3.3")
+        console.print("handmark version 0.4.0")
         raise typer.Exit()
 
 
 app = typer.Typer(
-    help="Transforms handwritten images into Markdown files.",
+    help="Transform handwritten images into structured documents (MD, JSON, YAML, XML).",
     add_completion=False,
     context_settings={"help_option_names": ["-h", "--help"]},
 )
