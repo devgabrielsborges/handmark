@@ -25,3 +25,8 @@ dependencies = [
 
 [project.scripts]
 handmark = "main:main"
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+]
