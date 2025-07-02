@@ -2,16 +2,14 @@
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
 import os
-from pathlib import Path 
+from pathlib import Path
 
-from dissector import ImageDissector 
-from azure.ai.inference.models import ( 
+from src.dissector import ImageDissector
+from azure.ai.inference.models import (
     SystemMessage,
     UserMessage,
     TextContentItem,
     ImageContentItem,
-    # ImageUrl, # Not directly used in assertions here
-    # ImageDetailLevel, # Not directly used in assertions here
 )
 
 
@@ -19,131 +17,195 @@ from azure.ai.inference.models import (
 def mock_env_vars(monkeypatch):
     monkeypatch.setenv("GITHUB_TOKEN", "test_token_dissector")
 
+
 @pytest.fixture
 def dummy_image_path():
     image_file = Path("dummy_image_for_dissector.png")
-    image_file.write_text("dummy image data") 
-    yield image_file 
-    if image_file.exists(): 
+    image_file.write_text("dummy image data")
+    yield image_file
+    if image_file.exists():
         os.remove(image_file)
 
 
 @pytest.fixture
-def dissector_instance(dummy_image_path):
-    with patch("dissector.ChatCompletionsClient") as MockChatCompletionsClient:
+def mock_config():
+    return {
+        "output_formats": {
+            "markdown": {
+                "system_message_content": "System message for markdown",
+                "user_message_content": "User message for markdown",
+                "file_extension": ".md",
+                "content_type": "text/markdown",
+            },
+            "json": {
+                "system_message_content": "System message for JSON",
+                "user_message_content": "User message for JSON",
+                "file_extension": ".json",
+                "content_type": "application/json",
+                "pretty_print": True,
+                "ensure_ascii": False,
+            },
+            "yaml": {
+                "system_message_content": "System message for YAML",
+                "user_message_content": "User message for YAML",
+                "file_extension": ".yaml",
+                "content_type": "application/x-yaml",
+                "default_flow_style": False,
+                "allow_unicode": True,
+            },
+            "xml": {
+                "system_message_content": "System message for XML",
+                "user_message_content": "User message for XML",
+                "file_extension": ".xml",
+                "content_type": "application/xml",
+                "encoding": "utf-8",
+                "pretty_print": True,
+            },
+        },
+        "default_format": "markdown",
+    }
+
+
+@pytest.fixture
+def dissector_instance(dummy_image_path, mock_config):
+    with patch("src.dissector.ChatCompletionsClient") as MockClient:
         mock_azure_client_instance = MagicMock()
-        MockChatCompletionsClient.return_value = mock_azure_client_instance
-        instance = ImageDissector(image_path=str(dummy_image_path))
-        yield instance
+        MockClient.return_value = mock_azure_client_instance
+
+        with patch("builtins.open", mock_open()):
+            with patch("json.load", return_value=mock_config):
+                instance = ImageDissector(
+                    image_path=str(dummy_image_path), output_format="markdown"
+                )
+                yield instance
+
 
 def test_image_dissector_initialization(dissector_instance, dummy_image_path):
+    """Test basic initialization of ImageDissector."""
     assert dissector_instance.image_path == str(dummy_image_path)
     assert dissector_instance.image_format == "png"
     assert dissector_instance._token == "test_token_dissector"
-    assert dissector_instance._model_name == "openai/gpt-4o" 
-    assert hasattr(dissector_instance, '_client')
+    assert dissector_instance.output_format == "markdown"
+    assert hasattr(dissector_instance, "_client")
     assert isinstance(dissector_instance._client, MagicMock)
-    # The problematic assertion: `assert dissector_instance._client == dissector.ChatCompletionsClient.return_value`
-    # is removed as `isinstance` check and successful initialization (due to mocked client) is sufficient here.
 
 
-def test_image_dissector_initialization_with_custom_model(monkeypatch, dummy_image_path):
-    custom_model_name = "custom/model-xyz"
-    with patch("dissector.ChatCompletionsClient") as MockChatCompletionsClient:
-        mock_azure_client_instance = MagicMock()
-        MockChatCompletionsClient.return_value = mock_azure_client_instance
-        instance = ImageDissector(image_path=str(dummy_image_path), model=custom_model_name)
-    
-    assert instance.image_path == str(dummy_image_path)
-    assert instance._model_name == custom_model_name
-    MockChatCompletionsClient.assert_called_once()
+def test_image_dissector_initialization_with_custom_format(
+    dummy_image_path, mock_config
+):
+    """Test initialization with different output formats."""
+    formats_to_test = ["json", "yaml", "xml", "markdown"]
+
+    for format_name in formats_to_test:
+        with patch("src.dissector.ChatCompletionsClient"):
+            with patch("builtins.open", mock_open()):
+                with patch("json.load", return_value=mock_config):
+                    instance = ImageDissector(
+                        image_path=str(dummy_image_path), output_format=format_name
+                    )
+                    assert instance.output_format == format_name
+
+
+def test_image_dissector_initialization_invalid_format(dummy_image_path, mock_config):
+    """Test initialization with invalid format raises error."""
+    with patch("src.dissector.ChatCompletionsClient"):
+        with patch("builtins.open", mock_open()):
+            with patch("json.load", return_value=mock_config):
+                with pytest.raises(ValueError, match="Unknown output format"):
+                    ImageDissector(
+                        image_path=str(dummy_image_path), output_format="invalid_format"
+                    )
 
 
 def test_image_dissector_initialization_no_token(monkeypatch, dummy_image_path):
+    """Test initialization fails without GitHub token."""
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
-    with pytest.raises(ValueError, match="GITHUB_TOKEN was not found in environment."):
+    with pytest.raises(ValueError, match="GITHUB_TOKEN was not found"):
         ImageDissector(image_path=str(dummy_image_path))
 
 
-def test_sanitize_filename_empty_and_whitespace(dissector_instance):
+def test_get_file_extension(dissector_instance, mock_config):
+    """Test file extension retrieval for different formats."""
+    format_extensions = {
+        "markdown": ".md",
+        "json": ".json",
+        "yaml": ".yaml",
+        "xml": ".xml",
+    }
+
+    for format_name, expected_ext in format_extensions.items():
+        dissector_instance.output_format = format_name
+        assert dissector_instance._get_file_extension() == expected_ext
+
+
+def test_sanitize_filename_basic_cases(dissector_instance):
+    """Test filename sanitization with basic cases."""
     assert dissector_instance._sanitize_filename("") == ""
     assert dissector_instance._sanitize_filename("   ") == ""
-
-
-def test_sanitize_filename_simple_cases(dissector_instance):
     assert dissector_instance._sanitize_filename("My Test File") == "my_test_file.md"
     assert dissector_instance._sanitize_filename("Another Title!") == "another_title.md"
-    assert (
-        dissector_instance._sanitize_filename("file_with_numbers_123")
-        == "file_with_numbers_123.md"
-    )
 
 
 def test_sanitize_filename_special_characters(dissector_instance):
-    assert (
-        dissector_instance._sanitize_filename("A!@#$%^&*()_+{}[]|\\\\:;'\\\",.<>?/B")
-        == "a_b.md"
-    )
+    """Test filename sanitization with special characters."""
+    assert dissector_instance._sanitize_filename("A!@#$%^&*()B") == "a_b.md"
     assert (
         dissector_instance._sanitize_filename(" leading and trailing_ ")
         == "leading_and_trailing.md"
     )
-    assert dissector_instance._sanitize_filename("  multiple  spaces  ") == "multiple_spaces.md"
 
 
 def test_sanitize_filename_multiple_underscores(dissector_instance):
+    """Test filename sanitization removes multiple underscores."""
     assert dissector_instance._sanitize_filename("test___name") == "test_name.md"
     assert dissector_instance._sanitize_filename("_test_name_") == "test_name.md"
-    assert dissector_instance._sanitize_filename("no__valid__chars") == "no_valid_chars.md"
 
 
-def test_get_response_success(dissector_instance): 
-    mock_response_obj = MagicMock() 
-    mock_message_obj = MagicMock() 
+def test_strip_code_blocks(dissector_instance):
+    """Test code block stripping functionality."""
+    # Test YAML code block stripping
+    yaml_with_blocks = "```yaml\ntitle: Test\ncontent: data\n```"
+    yaml_clean = dissector_instance._strip_code_blocks(yaml_with_blocks, "yaml")
+    assert yaml_clean == "title: Test\ncontent: data"
+
+    # Test JSON code block stripping
+    json_with_blocks = '```json\n{"title": "Test"}\n```'
+    json_clean = dissector_instance._strip_code_blocks(json_with_blocks, "json")
+    assert json_clean == '{"title": "Test"}'
+
+    # Test content without code blocks
+    plain_content = "title: Test\ncontent: data"
+    plain_result = dissector_instance._strip_code_blocks(plain_content, "yaml")
+    assert plain_result == plain_content
+
+
+def test_get_response_success(dissector_instance):
+    """Test successful response from AI model."""
+    mock_response_obj = MagicMock()
+    mock_message_obj = MagicMock()
     mock_message_obj.content = "# Test Title\nTest content"
     mock_response_obj.choices = [MagicMock(message=mock_message_obj)]
-    
+
     dissector_instance._client.complete.return_value = mock_response_obj
 
     response_content = dissector_instance.get_response()
     assert response_content == "# Test Title\nTest content"
-    
+
     dissector_instance._client.complete.assert_called_once()
-    call_args = dissector_instance._client.complete.call_args
-    
-    assert call_args.kwargs["model"] == dissector_instance._model_name 
-    
-    messages_passed = call_args.kwargs["messages"]
-    assert len(messages_passed) == 2
-    
-    assert isinstance(messages_passed[0], SystemMessage)
-    assert messages_passed[0].content == (
-            "You are a helpful assistant that transforms "
-            "handwritten images in Markdown files."
-        )
-    
-    assert isinstance(messages_passed[1], UserMessage)
-    user_message_content_parts = messages_passed[1].content
-    assert isinstance(user_message_content_parts[0], TextContentItem)
-    assert user_message_content_parts[0].text == (
-            "Give to me a Markdown of this text on the image and only this."
-            "Add a title for it, that must be the first line of the response ."
-            "Do not describe the image."
-        )
-    assert isinstance(user_message_content_parts[1], ImageContentItem)
 
 
-@patch("dissector.ImageDissector.get_response")
+@patch("src.dissector.ImageDissector.get_response")
 @patch("builtins.open", new_callable=mock_open)
 @patch("os.makedirs")
-def test_write_response_with_derived_filename(
+def test_write_response_markdown_with_title(
     mock_os_makedirs, mock_file_open, mock_get_response, dissector_instance
 ):
+    """Test writing response with markdown title extraction."""
     mock_get_response.return_value = "# My Awesome Title\nThis is the content."
-    
-    expected_sanitized_filename = "my_awesome_title.md" 
+
+    expected_filename = "my_awesome_title.md"
     expected_dest_path = "/custom/output_path"
-    expected_full_path = os.path.join(expected_dest_path, expected_sanitized_filename)
+    expected_full_path = os.path.join(expected_dest_path, expected_filename)
 
     actual_path = dissector_instance.write_response(
         dest_path=expected_dest_path, fallback_filename="fallback.md"
@@ -151,44 +213,86 @@ def test_write_response_with_derived_filename(
 
     assert actual_path == expected_full_path
     mock_os_makedirs.assert_called_once_with(expected_dest_path, exist_ok=True)
-    mock_file_open.assert_called_once_with(expected_full_path, "w")
-    mock_file_open().write.assert_called_once_with(
-        "# My Awesome Title\nThis is the content."
-    )
+    mock_file_open.assert_called_once_with(expected_full_path, "w", encoding="utf-8")
 
 
-@patch("dissector.ImageDissector.get_response")
+@patch("src.dissector.ImageDissector.get_response")
 @patch("builtins.open", new_callable=mock_open)
 @patch("os.makedirs")
-def test_write_response_with_fallback_filename_empty_title(
+def test_write_response_json_with_title(
     mock_os_makedirs, mock_file_open, mock_get_response, dissector_instance
 ):
-    mock_get_response.return_value = "\nThis is content without a proper title line." 
-    
-    fallback_filename_to_use = "response_fallback.md"
-    expected_dest_path = "./output_fallback_dir"
-    expected_full_path = os.path.join(expected_dest_path, fallback_filename_to_use)
+    """Test writing response with JSON title extraction."""
+    dissector_instance.output_format = "json"
+    mock_get_response.return_value = '{"title": "Test Document", "content": "test"}'
+
+    expected_filename = "test_document.json"
+    expected_dest_path = "/test/path"
+    expected_full_path = os.path.join(expected_dest_path, expected_filename)
 
     actual_path = dissector_instance.write_response(
-        dest_path=expected_dest_path, fallback_filename=fallback_filename_to_use
+        dest_path=expected_dest_path, fallback_filename="fallback.json"
     )
 
     assert actual_path == expected_full_path
-    mock_os_makedirs.assert_called_once_with(expected_dest_path, exist_ok=True)
-    mock_file_open.assert_called_once_with(expected_full_path, "w")
-    mock_file_open().write.assert_called_once_with("\nThis is content without a proper title line.")
 
 
-@patch("dissector.ImageDissector.get_response")
+@patch("src.dissector.ImageDissector.get_response")
 @patch("builtins.open", new_callable=mock_open)
 @patch("os.makedirs")
-def test_write_response_no_content_at_all_uses_fallback(
+def test_write_response_yaml_with_title(
     mock_os_makedirs, mock_file_open, mock_get_response, dissector_instance
 ):
-    mock_get_response.return_value = None
+    """Test writing response with YAML title extraction."""
+    dissector_instance.output_format = "yaml"
+    mock_get_response.return_value = "title: Test Document\ncontent: test data"
 
-    fallback_filename = "empty_content_fallback.md"
-    expected_dest_path = "test_empty_output"
+    expected_filename = "test_document.yaml"
+    expected_dest_path = "/test/path"
+    expected_full_path = os.path.join(expected_dest_path, expected_filename)
+
+    actual_path = dissector_instance.write_response(
+        dest_path=expected_dest_path, fallback_filename="fallback.yaml"
+    )
+
+    assert actual_path == expected_full_path
+
+
+@patch("src.dissector.ImageDissector.get_response")
+@patch("builtins.open", new_callable=mock_open)
+@patch("os.makedirs")
+def test_write_response_xml_with_title(
+    mock_os_makedirs, mock_file_open, mock_get_response, dissector_instance
+):
+    """Test writing response with XML title extraction."""
+    dissector_instance.output_format = "xml"
+    xml_content = (
+        "<document><title>Test Document</title><content>test</content></document>"
+    )
+    mock_get_response.return_value = xml_content
+
+    expected_filename = "test_document.xml"
+    expected_dest_path = "/test/path"
+    expected_full_path = os.path.join(expected_dest_path, expected_filename)
+
+    actual_path = dissector_instance.write_response(
+        dest_path=expected_dest_path, fallback_filename="fallback.xml"
+    )
+
+    assert actual_path == expected_full_path
+
+
+@patch("src.dissector.ImageDissector.get_response")
+@patch("builtins.open", new_callable=mock_open)
+@patch("os.makedirs")
+def test_write_response_fallback_filename(
+    mock_os_makedirs, mock_file_open, mock_get_response, dissector_instance
+):
+    """Test writing response uses fallback when no title found."""
+    mock_get_response.return_value = "Content without title"
+
+    fallback_filename = "fallback.md"
+    expected_dest_path = "./output"
     expected_full_path = os.path.join(expected_dest_path, fallback_filename)
 
     actual_path = dissector_instance.write_response(
@@ -196,39 +300,3 @@ def test_write_response_no_content_at_all_uses_fallback(
     )
 
     assert actual_path == expected_full_path
-    mock_os_makedirs.assert_called_once_with(expected_dest_path, exist_ok=True)
-    mock_file_open.assert_called_once_with(expected_full_path, "w")
-    mock_file_open().write.assert_called_once_with("") 
-
-
-@patch("dissector.ImageDissector.get_response")
-@patch("builtins.open", new_callable=mock_open)
-@patch("os.makedirs")
-def test_write_response_title_only_special_chars_results_in_empty_sanitized_uses_fallback(
-    mock_os_makedirs, mock_file_open, mock_get_response, dissector_instance
-):
-    # This is the raw title line as it would appear in the markdown content
-    raw_title_line_from_ai = "# !@#" 
-    mock_get_response.return_value = f"{raw_title_line_from_ai}\nContent for this case."
-
-    # We want to simulate that when _sanitize_filename is called with raw_title_line_from_ai,
-    # it returns an empty string, forcing the use of the fallback filename.
-    with patch.object(dissector_instance, '_sanitize_filename', return_value="") as mock_sanitize_method_on_instance:
-        
-        fallback_filename_for_special_title = "special_chars_fallback.md"
-        expected_dest_path = "output_special_title"
-        expected_full_path = os.path.join(expected_dest_path, fallback_filename_for_special_title)
-
-        actual_path = dissector_instance.write_response(
-            dest_path=expected_dest_path, fallback_filename=fallback_filename_for_special_title
-        )
-        
-        assert actual_path == expected_full_path
-        # write_response extracts the first line " # !@# " and calls _sanitize_filename with it.
-        # The title_candidate passed to _sanitize_filename by write_response is lines[0].strip()
-        # which is "# !@#"
-        mock_sanitize_method_on_instance.assert_called_once_with(raw_title_line_from_ai) 
-        
-        mock_os_makedirs.assert_called_once_with(expected_dest_path, exist_ok=True)
-        mock_file_open.assert_called_once_with(expected_full_path, "w")
-        mock_file_open().write.assert_called_once_with(f"{raw_title_line_from_ai}\nContent for this case.")

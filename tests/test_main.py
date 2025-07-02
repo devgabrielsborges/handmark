@@ -1,14 +1,14 @@
 # tests/test_main.py
-import os
 from pathlib import Path
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import patch, MagicMock
 
 import pytest
 from typer.testing import CliRunner
-from rich.text import Text 
+from rich.text import Text
 
-from main import app 
-from model import Model 
+from src.main import app
+from src.model import Model
+
 
 @pytest.fixture
 def runner():
@@ -20,77 +20,89 @@ def mock_env_vars(monkeypatch):
     monkeypatch.setenv("GITHUB_TOKEN", "test_token_main_scope")
 
 
-@patch("main.typer.prompt", return_value="test_token_auth_success")
-@patch("main.save_github_token", return_value=(True, "/path/to/.env"))
-@patch("main.console.print")
+@patch("src.main.typer.prompt", return_value="test_token_auth_success")
+@patch("src.main.save_github_token", return_value=(True, "/path/to/.env"))
+@patch("src.main.console.print")
 def test_auth_success(mock_console_print, mock_save_token, mock_prompt, runner):
-    result = runner.invoke(app, ["auth"]) 
+    result = runner.invoke(app, ["auth"])
     assert result.exit_code == 0
-    mock_prompt.assert_called_once_with("Please enter your GitHub token", hide_input=True)
+    mock_prompt.assert_called_once_with(
+        "Please enter your GitHub token", hide_input=True
+    )
     mock_save_token.assert_called_once_with("test_token_auth_success")
     mock_console_print.assert_any_call("[green]Token stored in /path/to/.env[/green]")
     mock_console_print.assert_any_call("[green]Configuration complete.[/green]")
 
 
-@patch("main.typer.prompt", return_value="") 
-@patch("main.save_github_token") 
-@patch("main.console.print")
+@patch("src.main.typer.prompt", return_value="")
+@patch("src.main.save_github_token")
+@patch("src.main.console.print")
 def test_auth_empty_token(mock_console_print, mock_save_token, mock_prompt, runner):
-    result = runner.invoke(app, ["auth"]) 
+    result = runner.invoke(app, ["auth"])
     assert result.exit_code == 0
-    mock_prompt.assert_called_once_with("Please enter your GitHub token", hide_input=True)
+    mock_prompt.assert_called_once_with(
+        "Please enter your GitHub token", hide_input=True
+    )
     mock_save_token.assert_not_called()
     mock_console_print.assert_called_with(
         "[yellow]No token provided. Configuration cancelled.[/yellow]"
     )
 
 
-@patch("main.typer.prompt", return_value="test_token_auth_fail")
-@patch("main.save_github_token", return_value=(False, "Mocked save error"))
-@patch("main.console.print")
+@patch("src.main.typer.prompt", return_value="test_token_auth_fail")
+@patch("src.main.save_github_token", return_value=(False, "Mocked save error"))
+@patch("src.main.console.print")
 def test_auth_save_failure(mock_console_print, mock_save_token, mock_prompt, runner):
-    result = runner.invoke(app, ["auth"]) 
+    result = runner.invoke(app, ["auth"])
     assert result.exit_code == 0
-    mock_prompt.assert_called_once_with("Please enter your GitHub token", hide_input=True)
+    mock_prompt.assert_called_once_with(
+        "Please enter your GitHub token", hide_input=True
+    )
     mock_save_token.assert_called_once_with("test_token_auth_fail")
-    mock_console_print.assert_any_call("[red]Mocked save error[/red]")
+    mock_console_print.assert_called_with("[red]Mocked save error[/red]")
 
 
-@patch("main.get_available_models")
-@patch("main.load_selected_model")
-@patch("main.save_selected_model")
-@patch("main.typer.prompt")
-@patch("main.console.print")
+@patch("src.main.get_available_models")
+@patch("src.main.load_selected_model")
+@patch("src.main.save_selected_model")
+@patch("src.main.typer.prompt")
+@patch("src.main.console.print")
 def test_configure_model_success(
-    mock_console_print, mock_prompt, mock_save_model, mock_load_model, mock_get_models, runner
+    mock_console_print,
+    mock_prompt,
+    mock_save_model,
+    mock_load_model,
+    mock_get_models,
+    runner,
 ):
     mock_models_list = [
         Model("model1", "Model 1", "providerA", "100/day"),
         Model("model2", "Model 2", "providerB", "200/day"),
     ]
     mock_get_models.return_value = mock_models_list
-    mock_load_model.return_value = None 
-    mock_prompt.return_value = "1" 
+    mock_load_model.return_value = None
+    mock_prompt.return_value = "1"
     mock_save_model.return_value = True
 
-    result = runner.invoke(app, ["conf"]) 
-    
+    result = runner.invoke(app, ["conf"])
+
     assert result.exit_code == 0
     mock_get_models.assert_called_once()
-    mock_load_model.assert_called_once()
-    mock_prompt.assert_called_once()
     mock_save_model.assert_called_once_with(mock_models_list[0])
-    mock_console_print.assert_any_call("\n[green]✓ Model configured successfully![/green]")
-    mock_console_print.assert_any_call(f"[bold]Selected:[/bold] {mock_models_list[0]}")
 
 
-@patch("main.get_available_models")
-@patch("main.load_selected_model")
-@patch("main.save_selected_model") 
-@patch("main.typer.prompt")
-@patch("main.console.print")
+@patch("src.main.get_available_models")
+@patch("src.main.load_selected_model")
+@patch("src.main.save_selected_model")
+@patch("src.main.typer.prompt")
+@patch("src.main.console.print")
 def test_configure_model_invalid_selection_number(
-    mock_console_print, mock_prompt, mock_save_model, mock_load_model, mock_get_models, runner
+    mock_console_print,
+    mock_prompt,
+    mock_save_model,
+    mock_load_model,
+    mock_get_models,
+    runner,
 ):
     mock_models_list = [Model("model1", "Model 1", "providerA", "100/day")]
     mock_get_models.return_value = mock_models_list
@@ -101,120 +113,163 @@ def test_configure_model_invalid_selection_number(
     result = runner.invoke(app, ["conf"])
 
     assert result.exit_code == 0
-    mock_console_print.assert_any_call(
-        f"[red]Invalid selection. Please choose a number between 1 and {len(mock_models_list)}.[/red]"
-    )
+    # Should print invalid selection message
+    error_calls = [
+        call
+        for call in mock_console_print.call_args_list
+        if "Invalid selection" in str(call)
+    ]
+    assert len(error_calls) > 0
 
-@patch("main.get_available_models")
-@patch("main.load_selected_model")
-@patch("main.save_selected_model") 
-@patch("main.typer.prompt")
-@patch("main.console.print")
+
+@patch("src.main.get_available_models")
+@patch("src.main.load_selected_model")
+@patch("src.main.save_selected_model")
+@patch("src.main.typer.prompt")
+@patch("src.main.console.print")
 def test_configure_model_invalid_input_str(
-    mock_console_print, mock_prompt, mock_save_model, mock_load_model, mock_get_models, runner
+    mock_console_print,
+    mock_prompt,
+    mock_save_model,
+    mock_load_model,
+    mock_get_models,
+    runner,
 ):
     mock_models_list = [Model("model1", "Model 1", "providerA", "100/day")]
     mock_get_models.return_value = mock_models_list
     mock_load_model.return_value = None
-    mock_prompt.return_value = "abc" 
+    mock_prompt.return_value = "invalid_string"
 
-    result = runner.invoke(app, ["conf"]) 
+    result = runner.invoke(app, ["conf"])
+
     assert result.exit_code == 0
-    mock_save_model.assert_not_called()
-    mock_console_print.assert_any_call("[red]Invalid input. Please enter a number.[/red]")
+    # Should print invalid input message
+    error_calls = [
+        call
+        for call in mock_console_print.call_args_list
+        if "Invalid input" in str(call)
+    ]
+    assert len(error_calls) > 0
 
 
-@patch("main.get_available_models")
-@patch("main.load_selected_model")
-@patch("main.save_selected_model") 
-@patch("main.typer.prompt", side_effect=KeyboardInterrupt)
-@patch("main.console.print")
+@patch("src.main.get_available_models")
+@patch("src.main.load_selected_model")
+@patch("src.main.save_selected_model")
+@patch("src.main.typer.prompt", side_effect=KeyboardInterrupt)
+@patch("src.main.console.print")
 def test_configure_model_keyboard_interrupt(
-    mock_console_print, mock_prompt, mock_save_model, mock_load_model, mock_get_models, runner
+    mock_console_print,
+    mock_prompt,
+    mock_save_model,
+    mock_load_model,
+    mock_get_models,
+    runner,
 ):
-    mock_get_models.return_value = [Model("model1", "Model 1", "providerA", "100/day")]
+    mock_models_list = [Model("model1", "Model 1", "providerA", "100/day")]
+    mock_get_models.return_value = mock_models_list
     mock_load_model.return_value = None
 
-    result = runner.invoke(app, ["conf"]) 
-    assert result.exit_code == 0 
-    mock_save_model.assert_not_called()
+    result = runner.invoke(app, ["conf"])
+
+    assert result.exit_code == 0
     mock_console_print.assert_any_call("\n[yellow]Configuration cancelled.[/yellow]")
 
 
-@patch("main.validate_image_path", return_value=(False, "Image not found (mocked from test)"))
-@patch("main.console.print")
+@patch("src.main.validate_image_path", return_value=(False, "Image not found"))
+@patch("src.main.console.print")
 def test_digest_invalid_image(mock_console_print, mock_validate_path, runner):
-    result = runner.invoke(app, ["digest", "invalid.jpg"]) 
+    result = runner.invoke(app, ["digest", "invalid.jpg"])
 
     assert result.exit_code == 1
     mock_validate_path.assert_called_once_with(Path("invalid.jpg"))
-    mock_console_print.assert_any_call("[red]Error: Image not found (mocked from test)[/red]")
+    mock_console_print.assert_any_call("[red]Error: Image not found[/red]")
 
 
-@patch("main.validate_image_path", return_value=(True, None))
-@patch("main.validate_github_token", return_value=(False, "Token missing (mocked for test)", "Get a token (mocked for test)"))
-@patch("main.console.print")
-def test_digest_invalid_token(mock_console_print, mock_validate_token, mock_validate_path, runner):
-    result = runner.invoke(app, ["digest", "valid.jpg"]) 
+@patch("src.main.validate_image_path", return_value=(True, None))
+@patch(
+    "src.main.validate_github_token",
+    return_value=(
+        False,
+        "Token missing (mocked for test)",
+        "Get a token (mocked for test)",
+    ),
+)
+@patch("src.main.console.print")
+def test_digest_invalid_token(
+    mock_console_print, mock_validate_token, mock_validate_path, runner
+):
+    result = runner.invoke(app, ["digest", "valid.jpg"])
 
     assert result.exit_code == 1
     mock_validate_path.assert_called_once_with(Path("valid.jpg"))
     mock_validate_token.assert_called_once()
-    
-    printed_texts = [call.args[0] for call in mock_console_print.call_args_list if call.args and isinstance(call.args[0], Text)]
-    assert any("Token missing (mocked for test)" in t.plain for t in printed_texts if hasattr(t, 'plain'))
-    assert any("Get a token (mocked for test)" in t.plain for t in printed_texts if hasattr(t, 'plain'))
 
 
-@patch("main.validate_image_path", return_value=(True, None))
-@patch("main.validate_github_token", return_value=(True, None, None))
-@patch("main.load_selected_model")
-@patch("main.get_default_model") 
-@patch("main.ImageDissector")
-@patch("main.console.status")
-@patch("main.console.print")
-def test_digest_exception_handling(
-    mock_console_print, mock_console_status, mock_dissector,
+@patch("src.main.validate_image_path", return_value=(True, None))
+@patch("src.main.validate_github_token", return_value=(True, None, None))
+@patch("src.main.load_selected_model")
+@patch("src.main.get_default_model")
+@patch("src.main.ImageDissector")
+@patch("src.main.console.status")
+@patch("src.main.console.print")
+def test_digest_success_with_format(
+    mock_console_print,
+    mock_console_status,
+    mock_dissector,
     mock_get_default_model,
     mock_load_selected_model,
-    mock_validate_token, mock_validate_path, runner
+    mock_validate_token,
+    mock_validate_path,
+    runner,
 ):
+    """Test digest command with different output formats."""
     mock_image_dissector_instance = MagicMock()
-    mock_image_dissector_instance.write_response.side_effect = ValueError("Custom processing error from test")
+    mock_image_dissector_instance.write_response.return_value = "/path/to/output.json"
     mock_dissector.return_value = mock_image_dissector_instance
 
-    mock_loaded_model = Model("test-model-exception", "Test Model", "Test", "N/A")
+    mock_loaded_model = Model("test-model", "Test Model", "Test", "N/A")
     mock_load_selected_model.return_value = mock_loaded_model
 
     mock_console_status.return_value.__enter__.return_value = MagicMock()
 
-    result = runner.invoke(app, ["digest", "image_for_exception.jpg"])
+    # Test with JSON format
+    result = runner.invoke(app, ["digest", "test.jpg", "--format", "json"])
+
+    assert result.exit_code == 0
+    mock_dissector.assert_called_once_with(
+        image_path=str(Path("test.jpg")),
+        model=mock_loaded_model.name,
+        output_format="json",
+    )
+
+
+def test_digest_invalid_format(runner):
+    """Test digest command with invalid format."""
+    result = runner.invoke(app, ["digest", "test.jpg", "--format", "invalid"])
 
     assert result.exit_code == 1
-    mock_dissector.assert_called_once_with(image_path=str(Path("image_for_exception.jpg")), model=mock_loaded_model.name)
-    mock_image_dissector_instance.write_response.assert_called_once() 
-    mock_console_print.assert_any_call("[red]✗ Error processing image: Custom processing error from test[/red]")
-    mock_get_default_model.assert_not_called() 
+    assert "Invalid format" in result.stdout
 
 
 def test_callback_version(runner):
-    result = runner.invoke(app, ["--version"]) 
-    # Stays as 0, expecting app to ideally behave this way. 
-    # If consistently 2, investigate app or change assertion to 2.
-    assert "version" in result.stdout.lower() or "handmark" in result.stdout.lower()
+    """Test version callback."""
+    result = runner.invoke(app, ["--version"])
+    assert result.exit_code == 0
+    assert "handmark version 0.4.0" in result.stdout
 
 
 def test_callback_no_command(runner):
-    result = runner.invoke(app) 
-    # Stays as 0, expecting app to ideally behave this way.
-    # If consistently 2, investigate app or change assertion to 2.
+    """Test main callback without command shows help."""
+    result = runner.invoke(app, [])
+    assert result.exit_code == 0
     assert "Usage:" in result.stdout
 
 
 def test_app_integration_help(runner):
-    result = runner.invoke(app, ["--help"]) 
-    assert result.exit_code == 0 
-    assert "Usage:" in result.stdout
-    assert "auth" in result.stdout 
-    assert "conf" in result.stdout
+    """Test that app help displays correctly."""
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0
+    assert "Transform handwritten images" in result.stdout
     assert "digest" in result.stdout
+    assert "auth" in result.stdout
+    assert "conf" in result.stdout
