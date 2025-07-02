@@ -64,12 +64,19 @@ def validate_github_token() -> Tuple[bool, Optional[str], Optional[str]]:
     """Validate GitHub token exists
 
     Returns:
-        Tuple[bool, Optional[str], Optional[str]]: Success status, error message, guidance message
+        Tuple[bool, Optional[str], Optional[str]]: Success status,
+        error message, guidance message
     """
     github_token = load_github_token()
     if not github_token:
-        error = "Error: GITHUB_TOKEN environment variable not set and not found in project directory."
-        guidance = "Please set it, use 'handmark conf', or ensure .env file exists and is readable."
+        error = (
+            "Error: GITHUB_TOKEN environment variable not set and "
+            "not found in project directory."
+        )
+        guidance = (
+            "Please set it, use 'handmark conf', or ensure .env file "
+            "exists and is readable."
+        )
         return False, error, guidance
 
     return True, None, None
@@ -78,7 +85,8 @@ def validate_github_token() -> Tuple[bool, Optional[str], Optional[str]]:
 def format_success_message(output_path: str, image_path: Path) -> Panel:
     """Format success message panel"""
     return Panel(
-        f"Response written to [bold]{output_path}[/bold] for image: [italic]{image_path}[/italic]",
+        f"Response written to [bold]{output_path}[/bold] for image: "
+        f"[italic]{image_path}[/italic]",
         title="Success",
-        border_style="green"
+        border_style="green",
     )
