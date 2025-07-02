@@ -3,8 +3,6 @@ import re
 import json
 import yaml
 import xml.etree.ElementTree as ET
-from pathlib import Path
-from typing import Dict, Any
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import (
     SystemMessage,
@@ -15,6 +13,10 @@ from azure.ai.inference.models import (
     ImageDetailLevel,
 )
 from azure.core.credentials import AzureKeyCredential
+from models.json import get_json_config
+from models.markdown import get_markdown_config
+from models.xml import get_xml_config
+from models.yaml import get_yaml_config
 
 
 class ImageDissector:
@@ -27,7 +29,7 @@ class ImageDissector:
         self.image_path = image_path
         self.image_format = image_path.split(".")[-1]
         self.output_format = output_format.lower()
-        self._load_config()
+        self.format_config = self._get_format_config()
 
         raw_token = os.getenv("GITHUB_TOKEN")
         if raw_token:
@@ -44,25 +46,22 @@ class ImageDissector:
             credential=AzureKeyCredential(self._token),
         )
 
-    def _load_config(self) -> None:
-        """Load configuration from config.json file"""
-        config_path = Path(__file__).parent.parent / "config" / "config.json"
-        try:
-            with open(config_path, "r") as f:
-                self.config = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            raise ValueError(f"Could not load config file: {e}")
+    def _get_format_config(self):
+        """Get configuration for the current output format using dataclasses"""
+        if self.output_format == "markdown":
+            return get_markdown_config()
+        elif self.output_format == "json":
+            return get_json_config()
+        elif self.output_format == "yaml":
+            return get_yaml_config()
+        elif self.output_format == "xml":
+            return get_xml_config()
+        else:
+            raise ValueError(f"Unknown output format '{self.output_format}'.")
 
-        if self.output_format not in self.config["output_formats"]:
-            available_formats = list(self.config["output_formats"].keys())
-            raise ValueError(
-                f"Unknown output format '{self.output_format}'. "
-                f"Available formats: {available_formats}"
-            )
-
-    def _get_format_config(self) -> Dict[str, Any]:
-        """Get configuration for the current output format"""
-        return self.config["output_formats"][self.output_format]
+    def _get_file_extension(self) -> str:
+        """Get the file extension for the current output format."""
+        return self.format_config.file_extension
 
     def _sanitize_filename(self, name: str) -> str:
         """Converts a string to a safe filename with the appropriate extension."""
@@ -87,9 +86,8 @@ class ImageDissector:
         return f"{name}{extension}"
 
     def get_response(self) -> str:
-        format_config = self._get_format_config()
-        system_message_content = format_config["system_message_content"]
-        user_message_text = format_config["user_message_content"]
+        system_message_content = self.format_config.system_message_content
+        user_message_text = self.format_config.user_message_content
 
         response = self._client.complete(
             messages=[
@@ -130,11 +128,10 @@ class ImageDissector:
         try:
             clean_content = self._strip_code_blocks(content, "json")
             parsed = json.loads(clean_content)
-            format_config = self._get_format_config()
             return json.dumps(
                 parsed,
-                indent=2 if format_config.get("pretty_print", True) else None,
-                ensure_ascii=not format_config.get("ensure_ascii", False),
+                indent=2 if self.format_config.pretty_print else None,
+                ensure_ascii=not self.format_config.ensure_ascii,
             )
         except json.JSONDecodeError:
             # If it's not valid JSON, return as-is
@@ -145,11 +142,10 @@ class ImageDissector:
         try:
             clean_content = self._strip_code_blocks(content, "yaml")
             parsed = yaml.safe_load(clean_content)
-            format_config = self._get_format_config()
             return yaml.dump(
                 parsed,
-                default_flow_style=format_config.get("default_flow_style", False),
-                allow_unicode=format_config.get("allow_unicode", True),
+                default_flow_style=self.format_config.default_flow_style,
+                allow_unicode=self.format_config.allow_unicode,
             )
         except yaml.YAMLError:
             return content
@@ -159,17 +155,11 @@ class ImageDissector:
         try:
             clean_content = self._strip_code_blocks(content, "xml")
             root = ET.fromstring(clean_content)
-            format_config = self._get_format_config()
-            if format_config.get("pretty_print", True):
+            if self.format_config.pretty_print:
                 ET.indent(root, space="  ")
             return ET.tostring(root, encoding="unicode")
         except ET.ParseError:
             return content
-
-    def _get_file_extension(self) -> str:
-        """Get the file extension for the current format"""
-        format_config = self._get_format_config()
-        return format_config["file_extension"]
 
     def _strip_code_blocks(self, content: str, format_type: str) -> str:
         """Strip markdown code blocks from content if present"""

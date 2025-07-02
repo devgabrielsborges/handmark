@@ -15,6 +15,10 @@ from utils import (
     validate_image_path,
     validate_github_token,
 )
+from models.json import get_json_config
+from models.markdown import get_markdown_config
+from models.xml import get_xml_config
+from models.yaml import get_yaml_config
 
 
 def version_callback(value: bool):
@@ -183,6 +187,24 @@ def digest(
         except Exception as e:
             console.print(f"[red]✗ Error processing image: {str(e)}[/red]")
             raise typer.Exit(code=1)
+
+
+@app.command("test-formats")
+def test_formats():
+    """Test the format configurations."""
+    console.print(Panel("Testing Format Configurations", style="blue"))
+
+    configs = {
+        "Markdown": get_markdown_config(),
+        "JSON": get_json_config(),
+        "YAML": get_yaml_config(),
+        "XML": get_xml_config(),
+    }
+
+    for format_name, config in configs.items():
+        console.print(f"\n[bold]{format_name} Configuration:[/bold]")
+        for key, value in config.__dict__.items():
+            console.print(f"  [cyan]{key}:[/cyan] {value}")
 
 
 def main():
