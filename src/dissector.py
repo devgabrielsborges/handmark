@@ -56,7 +56,8 @@ class ImageDissector:
         if self.output_format not in self.config["output_formats"]:
             available_formats = list(self.config["output_formats"].keys())
             raise ValueError(
-                f"Unknown output format '{self.output_format}'. Available formats: {available_formats}"
+                f"Unknown output format '{self.output_format}'. "
+                f"Available formats: {available_formats}"
             )
 
     def _get_format_config(self) -> Dict[str, Any]:

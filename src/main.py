@@ -90,13 +90,14 @@ def configure_model():
                 selected_model = models[model_index]
 
                 if save_selected_model(selected_model):
-                    console.print(f"\n[green]✓ Model configured successfully![/green]")
+                    console.print("\n[green]✓ Model configured successfully![/green]")
                     console.print(f"[bold]Selected:[/bold] {selected_model}")
                 else:
-                    console.print(f"[red]✗ Failed to save model configuration.[/red]")
+                    console.print("[red]✗ Failed to save model configuration.[/red]")
             else:
                 console.print(
-                    f"[red]Invalid selection. Please choose a number between 1 and {len(models)}.[/red]"
+                    f"[red]Invalid selection. Please choose a number between 1 "
+                    f"and {len(models)}.[/red]"
                 )
 
         except ValueError:
