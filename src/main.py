@@ -109,6 +109,68 @@ def configure_model():
         console.print("\n[yellow]Configuration cancelled.[/yellow]")
 
 
+@app.command("test-connection")
+def test_connection():
+    """Test connection to the AI service."""
+    from config import get_github_token, get_selected_model
+    from model import get_default_model
+    
+    console.print(Panel("Testing AI Service Connection", style="blue"))
+    
+    token = get_github_token()
+    if not token:
+        console.print("[red]✗ No GitHub token found[/red]")
+        console.print("[yellow]Run 'handmark auth' to configure your token[/yellow]")
+        raise typer.Exit(code=1)
+    
+    console.print("[green]✓ GitHub token found[/green]")
+    
+    selected_model = get_selected_model()
+    if not selected_model:
+        selected_model = get_default_model()
+        console.print(f"[yellow]Using default model: {selected_model.name}[/yellow]")
+    else:
+        console.print(f"[blue]Using selected model: {selected_model.name}[/blue]")
+
+    try:
+        from azure.ai.inference import ChatCompletionsClient
+        from azure.core.credentials import AzureKeyCredential
+        from azure.ai.inference.models import SystemMessage, UserMessage, TextContentItem
+        
+        client = ChatCompletionsClient(
+            endpoint="https://models.github.ai/inference",
+            credential=AzureKeyCredential(token),
+        )
+        
+        console.print("[yellow]Testing connection to AI service...[/yellow]")
+        
+        response = client.complete(
+            messages=[
+                SystemMessage(content="You are a helpful assistant."),
+                UserMessage(content=[TextContentItem(text="Hello, respond with just 'OK'")]),
+            ],
+            model=selected_model.name,
+        )
+        
+        if response and response.choices:
+            console.print("[green]✓ Connection successful![/green]")
+            console.print(f"[green]✓ Model {selected_model.name} is responding[/green]")
+            return
+        else:
+            console.print("[red]✗ Empty response from service[/red]")
+            raise typer.Exit(code=1)
+            
+    except Exception as e:
+        console.print(f"[red]✗ Connection failed: {str(e)}[/red]")
+        if "timeout" in str(e).lower():
+            console.print("[yellow]💡 Network timeout - check your connection and try again[/yellow]")
+        elif "unauthorized" in str(e).lower():
+            console.print("[yellow]💡 Authentication failed - check your GitHub token[/yellow]")
+        else:
+            console.print("[yellow]💡 Service might be temporarily unavailable[/yellow]")
+        raise typer.Exit(code=1)
+
+
 @app.command("digest")
 def digest(
     image_path: Path = typer.Argument(
@@ -183,8 +245,36 @@ def digest(
 
             console.print("[green]✓ Image processed successfully![/green]")
             console.print(f"[bold]Output file saved to:[/bold] {actual_output_path}")
+        except TimeoutError as e:
+            console.print(f"[red]✗ Timeout Error:[/red] {str(e)}")
+            console.print(
+                "[yellow]💡 Try again in a few minutes or use a different model "
+                "with 'handmark set-model'[/yellow]"
+            )
+            raise typer.Exit(code=1)
+        except ValueError as e:
+            if "token" in str(e).lower() or "auth" in str(e).lower():
+                console.print(f"[red]✗ Authentication Error:[/red] {str(e)}")
+                console.print(
+                    "[yellow]💡 Run 'handmark auth' to configure your "
+                    "GitHub token[/yellow]"
+                )
+            else:
+                console.print(f"[red]✗ Configuration Error:[/red] {str(e)}")
+            raise typer.Exit(code=1)
+        except RuntimeError as e:
+            console.print(f"[red]✗ API Error:[/red] {str(e)}")
+            console.print(
+                "[yellow]💡 The API service might be temporarily unavailable. "
+                "Please try again later.[/yellow]"
+            )
+            raise typer.Exit(code=1)
         except Exception as e:
-            console.print(f"[red]✗ Error processing image: {str(e)}[/red]")
+            console.print(f"[red]✗ Unexpected Error:[/red] {str(e)}")
+            console.print(
+                "[yellow]💡 If this persists, please check your image file "
+                "and try again.[/yellow]"
+            )
             raise typer.Exit(code=1)
 
 
