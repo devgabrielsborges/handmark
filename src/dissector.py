@@ -31,14 +31,14 @@ class ImageDissector:
         self.output_format = output_format.lower()
         self.format_config = self._get_format_config()
 
-        raw_token = os.getenv("GITHUB_TOKEN")
-        if raw_token:
-            self._token = raw_token.strip()
-        else:
-            self._token = None
+        from config import get_github_token
+
+        self._token = get_github_token()
 
         if not self._token:
-            raise ValueError("GITHUB_TOKEN was not found in environment.")
+            raise ValueError(
+                "GITHUB_TOKEN was not found in environment or configuration."
+            )
         self._model_name = model
 
         self._client = ChatCompletionsClient(
