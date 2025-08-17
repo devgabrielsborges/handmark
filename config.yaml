@@ -1,0 +1,87 @@
+# Handmark Configuration File
+# This file contains all configurable settings for the handmark application
+
+app:
+  default_output_format: "markdown"
+  default_output_directory: "./"
+
+# GitHub Integration
+github:
+  token: null # Will be loaded from environment or set via 'handmark auth'
+
+# Selected AI Model
+model:
+  name: null
+  pretty_name: null
+  provider: null
+  rate_limit: null
+
+# Output Format Configurations
+formats:
+  markdown:
+    system_message_content: "You are a helpful assistant that transforms handwritten images into well-structured Markdown files."
+    user_message_content: "Convert the handwritten text in this image to Markdown format. Add a descriptive title as the first line (starting with #). Structure the content with appropriate headers, lists, and formatting. Only return the Markdown content, do not describe the image."
+    file_extension: ".md"
+    content_type: "text/markdown"
+
+  json:
+    system_message_content: "You are a helpful assistant that extracts structured data from handwritten images and formats it as JSON."
+    user_message_content: "Extract the text from this handwritten image and structure it as JSON. Include a 'title' field for the main topic, 'content' field for the main text, and 'sections' array if there are multiple topics or bullet points. Return only valid JSON, no explanations."
+    file_extension: ".json"
+    content_type: "application/json"
+    pretty_print: true
+    ensure_ascii: false
+
+  yaml:
+    system_message_content: "You are a helpful assistant that extracts structured data from handwritten images and formats it as YAML."
+    user_message_content: "Extract the text from this handwritten image and structure it as YAML. Include a 'title' field for the main topic, 'content' field for the main text, and 'sections' list if there are multiple topics or bullet points. Return only valid YAML, no explanations."
+    file_extension: ".yaml"
+    content_type: "application/x-yaml"
+    default_flow_style: false
+    allow_unicode: true
+
+  xml:
+    system_message_content: "You are a helpful assistant that extracts structured data from handwritten images and formats it as XML."
+    user_message_content: "Extract the text from this handwritten image and structure it as XML. Use a root element called 'document' with child elements for 'title', 'content', and 'sections' if applicable. ALWAYS include a 'title' element with a descriptive title for the content. Return only valid XML, no explanations."
+    file_extension: ".xml"
+    content_type: "application/xml"
+    encoding: "utf-8"
+    pretty_print: true
+
+# Available AI Models
+available_models:
+  - name: "microsoft/Phi-4-multimodal-instruct"
+    pretty_name: "Phi-4-multimodal-instruct"
+    provider: "Microsoft"
+    rate_limit: "150 requests/day"
+
+  - name: "openai/gpt-4.1-nano"
+    pretty_name: "GPT-4.1 Nano"
+    provider: "OpenAI"
+    rate_limit: "150 requests/day"
+
+  - name: "openai/gpt-4.1-mini"
+    pretty_name: "GPT-4.1 Mini"
+    provider: "OpenAI"
+    rate_limit: "150 requests/day"
+
+  - name: "microsoft/Phi-3.5-vision-instruct"
+    pretty_name: "Phi-3.5-vision-instruct"
+    provider: "Microsoft"
+    rate_limit: "150 requests/day"
+
+  - name: "meta/Llama-4-Maverick-17B-128E-Instruct-FP8"
+    pretty_name: "Llama-4-Maverick-17B-128E-Instruct-FP8"
+    provider: "Meta"
+    rate_limit: "50 requests/day"
+
+  - name: "meta/Llama-4-Scout-17B-16E-Instruct"
+    pretty_name: "Llama-4-Scout-17B-16E-Instruct"
+    provider: "Meta"
+    rate_limit: "50 requests/day"
+
+default_model:
+  name: "meta/Llama-4-Maverick-17B-128E-Instruct-FP8"
+  pretty_name: "Llama-4-Maverick-17B-128E-Instruct-FP8"
+  provider: "Meta"
+  rate_limit: "50 requests/day"
