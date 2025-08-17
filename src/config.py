@@ -62,7 +62,6 @@ def load_config() -> AppConfig:
     config_path = get_config_path()
 
     if not config_path.exists():
-        # Create default config if it doesn't exist
         default_config = AppConfig()
         save_config(default_config)
         return default_config
@@ -72,7 +71,6 @@ def load_config() -> AppConfig:
             data = yaml.safe_load(f) or {}
         return AppConfig.from_dict(data)
     except (yaml.YAMLError, OSError):
-        # Return default config if there's an error loading
         return AppConfig()
 
 
@@ -115,7 +113,6 @@ def get_github_token() -> Optional[str]:
     if env_token:
         return env_token
 
-    # Then check config file
     config = load_config()
     return config.github_token
 
@@ -168,15 +165,12 @@ def migrate_from_json_config() -> bool:
 
         config = load_config()
 
-        # Migrate selected model if it exists
         if "selected_model" in old_data:
             config.selected_model = old_data["selected_model"]
 
-        # Save migrated config
         success = save_config(config)
 
         if success:
-            # Remove old config file after successful migration
             old_config_path.unlink()
 
         return success
@@ -201,7 +195,6 @@ def migrate_from_env_file() -> bool:
         if token:
             success = save_github_token(token)
             if success:
-                # Remove .env file after successful migration
                 env_path.unlink()
             return success
     except Exception:
@@ -262,27 +255,22 @@ def update_project_config(key_path: str, value) -> bool:
     try:
         config_path = get_project_config_path()
 
-        # Load current config or create empty if it doesn't exist
         if config_path.exists():
             with open(config_path, "r") as f:
                 config = yaml.safe_load(f) or {}
         else:
             config = {}
 
-        # Navigate to the nested key and set the value
         keys = key_path.split(".")
         current = config
 
-        # Navigate to the parent of the target key
         for key in keys[:-1]:
             if key not in current:
                 current[key] = {}
             current = current[key]
 
-        # Set the final value
         current[keys[-1]] = value
 
-        # Save the updated config
         with open(config_path, "w") as f:
             yaml.dump(config, f, default_flow_style=False, indent=2)
 
