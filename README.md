@@ -91,6 +91,7 @@ This will prompt you to enter your GitHub token, which provides access to Azure 
 | `handmark auth` | Configure GitHub token authentication |
 | `handmark set-model` | Select and configure AI model |
 | `handmark config` | View current configuration settings |
+| `handmark test-connection` | Test connection to AI service |
 | `handmark --version` | Show version information |
 
 ### Process an Image
@@ -230,17 +231,32 @@ Error: Unsupported image format
 ```
 **Solution:** Ensure your image is in a supported format (JPEG, PNG, etc.).
 
-**No Model Configured Warning:**
+**Timeout Error:**
+
+```bash
+HTTPSConnectionPool(host='models.github.ai', port=443): Read timed out
 ```
+
+**Solution:** The AI service might be experiencing high load. Try:
+
+* Wait a few minutes and retry
+* Use a different model with `handmark set-model`
+* Check service status with `handmark test-connection`
+
+**No Model Configured Warning:**
+
+```bash
 No model configured. Using default model
 ```
-**Solution:** Run `handmark conf` to select your preferred AI model.
+
+**Solution:** Run `handmark set-model` to select your preferred AI model.
 
 ### Getting Help
 
-- Check the [issues page](https://github.com/devgabrielsborges/handmark/issues) for known problems
-- Create a new issue if you encounter a bug
-- Use `handmark --help` for command-line help
+* Check the [issues page](https://github.com/devgabrielsborges/handmark/issues) for known problems
+* Create a new issue if you encounter a bug
+* Use `handmark --help` for command-line help
+* Use `handmark test-connection` to diagnose connection issues
 
 ---
 
