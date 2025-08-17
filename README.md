@@ -16,6 +16,8 @@
 * 🔧 **Model Configuration** - Choose from multiple AI models and save your preferences
 * 🔐 **Secure Authentication** - GitHub token-based authentication with secure local storage
 * 📁 **Flexible Output** - Customize output directory and filename options
+* ⚙️ **YAML Configuration** - Centralized configuration via `config.yaml` for easy customization
+* 🎯 **Multiple Output Formats** - Support for Markdown, JSON, YAML, and XML output formats
 
 ---
 
@@ -87,7 +89,9 @@ This will prompt you to enter your GitHub token, which provides access to Azure 
 |---------|-------------|
 | `handmark digest <image>` | Convert handwritten image to Markdown |
 | `handmark auth` | Configure GitHub token authentication |
-| `handmark conf` | Select and configure AI model |
+| `handmark set-model` | Select and configure AI model |
+| `handmark config` | View current configuration settings |
+| `handmark test-connection` | Test connection to AI service |
 | `handmark --version` | Show version information |
 
 ### Process an Image
@@ -133,7 +137,7 @@ This will prompt you to enter your GitHub token, which is required for Azure AI 
 ### Configure Model
 
 ```bash
-handmark conf
+handmark set-model
 ```
 
 This command lets you select and configure the AI model used for image processing. You can choose from available Azure AI models, and your selection will be saved for future runs. If no model is configured, the system will use a default model.
@@ -143,6 +147,41 @@ This command lets you select and configure the AI model used for image processin
 ```bash
 handmark --version
 ```
+
+---
+
+## Configuration
+
+Handmark uses a centralized YAML configuration system that allows you to customize:
+
+* **AI model prompts** - Customize how the AI processes your images
+* **Output format settings** - Configure file extensions, content types, and format-specific options
+* **Available models** - Add or modify the list of AI models
+* **Default settings** - Set default output formats and directories
+
+### Configuration File
+
+The main configuration is stored in `config.yaml` in the project root. You can customize:
+
+```yaml
+# Example customizations
+formats:
+  markdown:
+    system_message_content: "Custom prompt for better academic note processing"
+    user_message_content: "Convert this academic content with proper citations"
+
+available_models:
+  - name: "custom/model"
+    pretty_name: "Custom Model"
+    provider: "Custom Provider"
+    rate_limit: "100 requests/day"
+```
+
+### Configuration Commands
+
+* `handmark config` - View current configuration
+
+For detailed configuration options, see [CONFIG.md](CONFIG.md).
 
 ---
 
@@ -192,17 +231,32 @@ Error: Unsupported image format
 ```
 **Solution:** Ensure your image is in a supported format (JPEG, PNG, etc.).
 
-**No Model Configured Warning:**
+**Timeout Error:**
+
+```bash
+HTTPSConnectionPool(host='models.github.ai', port=443): Read timed out
 ```
+
+**Solution:** The AI service might be experiencing high load. Try:
+
+* Wait a few minutes and retry
+* Use a different model with `handmark set-model`
+* Check service status with `handmark test-connection`
+
+**No Model Configured Warning:**
+
+```bash
 No model configured. Using default model
 ```
-**Solution:** Run `handmark conf` to select your preferred AI model.
+
+**Solution:** Run `handmark set-model` to select your preferred AI model.
 
 ### Getting Help
 
-- Check the [issues page](https://github.com/devgabrielsborges/handmark/issues) for known problems
-- Create a new issue if you encounter a bug
-- Use `handmark --help` for command-line help
+* Check the [issues page](https://github.com/devgabrielsborges/handmark/issues) for known problems
+* Create a new issue if you encounter a bug
+* Use `handmark --help` for command-line help
+* Use `handmark test-connection` to diagnose connection issues
 
 ---
 
@@ -280,7 +334,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Author
 
 * Gabriel Borges ([@devgabrielsborges](https://github.com/devgabrielsborges))
-
----
-
-*Last updated: May 29, 2025*

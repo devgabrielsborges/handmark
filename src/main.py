@@ -5,20 +5,19 @@ from rich.text import Text
 from dissector import ImageDissector
 from model import (
     get_available_models,
-    save_selected_model,
-    load_selected_model,
     get_default_model,
+)
+from config import (
+    initialize_config,
+    get_selected_model,
+    save_selected_model,
+    save_github_token,
 )
 from utils import (
     console,
-    save_github_token,
     validate_image_path,
     validate_github_token,
 )
-from models.json import get_json_config
-from models.markdown import get_markdown_config
-from models.xml import get_xml_config
-from models.yaml import get_yaml_config
 
 
 def version_callback(value: bool):
@@ -69,13 +68,13 @@ def handle_auth():
         console.print("[yellow]No token provided. Configuration cancelled.[/yellow]")
 
 
-@app.command("conf")
+@app.command("set-model")
 def configure_model():
     """Configure the AI model to use for processing images."""
     console.print(Panel("Model Configuration", style="blue"))
 
     models = get_available_models()
-    current_model = load_selected_model()
+    current_model = get_selected_model()
 
     if current_model:
         console.print(f"[blue]Current model:[/blue] {current_model}")
@@ -108,6 +107,68 @@ def configure_model():
             console.print("[red]Invalid input. Please enter a number.[/red]")
     except KeyboardInterrupt:
         console.print("\n[yellow]Configuration cancelled.[/yellow]")
+
+
+@app.command("test-connection")
+def test_connection():
+    """Test connection to the AI service."""
+    from config import get_github_token, get_selected_model
+    from model import get_default_model
+    
+    console.print(Panel("Testing AI Service Connection", style="blue"))
+    
+    token = get_github_token()
+    if not token:
+        console.print("[red]✗ No GitHub token found[/red]")
+        console.print("[yellow]Run 'handmark auth' to configure your token[/yellow]")
+        raise typer.Exit(code=1)
+    
+    console.print("[green]✓ GitHub token found[/green]")
+    
+    selected_model = get_selected_model()
+    if not selected_model:
+        selected_model = get_default_model()
+        console.print(f"[yellow]Using default model: {selected_model.name}[/yellow]")
+    else:
+        console.print(f"[blue]Using selected model: {selected_model.name}[/blue]")
+
+    try:
+        from azure.ai.inference import ChatCompletionsClient
+        from azure.core.credentials import AzureKeyCredential
+        from azure.ai.inference.models import SystemMessage, UserMessage, TextContentItem
+        
+        client = ChatCompletionsClient(
+            endpoint="https://models.github.ai/inference",
+            credential=AzureKeyCredential(token),
+        )
+        
+        console.print("[yellow]Testing connection to AI service...[/yellow]")
+        
+        response = client.complete(
+            messages=[
+                SystemMessage(content="You are a helpful assistant."),
+                UserMessage(content=[TextContentItem(text="Hello, respond with just 'OK'")]),
+            ],
+            model=selected_model.name,
+        )
+        
+        if response and response.choices:
+            console.print("[green]✓ Connection successful![/green]")
+            console.print(f"[green]✓ Model {selected_model.name} is responding[/green]")
+            return
+        else:
+            console.print("[red]✗ Empty response from service[/red]")
+            raise typer.Exit(code=1)
+            
+    except Exception as e:
+        console.print(f"[red]✗ Connection failed: {str(e)}[/red]")
+        if "timeout" in str(e).lower():
+            console.print("[yellow]💡 Network timeout - check your connection and try again[/yellow]")
+        elif "unauthorized" in str(e).lower():
+            console.print("[yellow]💡 Authentication failed - check your GitHub token[/yellow]")
+        else:
+            console.print("[yellow]💡 Service might be temporarily unavailable[/yellow]")
+        raise typer.Exit(code=1)
 
 
 @app.command("digest")
@@ -153,7 +214,7 @@ def digest(
         console.print(Text(guidance_msg, style="yellow"))
         raise typer.Exit(code=1)
 
-    selected_model = load_selected_model()
+    selected_model = get_selected_model()
     if not selected_model:
         selected_model = get_default_model()
         console.print(
@@ -184,31 +245,83 @@ def digest(
 
             console.print("[green]✓ Image processed successfully![/green]")
             console.print(f"[bold]Output file saved to:[/bold] {actual_output_path}")
+        except TimeoutError as e:
+            console.print(f"[red]✗ Timeout Error:[/red] {str(e)}")
+            console.print(
+                "[yellow]💡 Try again in a few minutes or use a different model "
+                "with 'handmark set-model'[/yellow]"
+            )
+            raise typer.Exit(code=1)
+        except ValueError as e:
+            if "token" in str(e).lower() or "auth" in str(e).lower():
+                console.print(f"[red]✗ Authentication Error:[/red] {str(e)}")
+                console.print(
+                    "[yellow]💡 Run 'handmark auth' to configure your "
+                    "GitHub token[/yellow]"
+                )
+            else:
+                console.print(f"[red]✗ Configuration Error:[/red] {str(e)}")
+            raise typer.Exit(code=1)
+        except RuntimeError as e:
+            console.print(f"[red]✗ API Error:[/red] {str(e)}")
+            console.print(
+                "[yellow]💡 The API service might be temporarily unavailable. "
+                "Please try again later.[/yellow]"
+            )
+            raise typer.Exit(code=1)
         except Exception as e:
-            console.print(f"[red]✗ Error processing image: {str(e)}[/red]")
+            console.print(f"[red]✗ Unexpected Error:[/red] {str(e)}")
+            console.print(
+                "[yellow]💡 If this persists, please check your image file "
+                "and try again.[/yellow]"
+            )
             raise typer.Exit(code=1)
 
 
-@app.command("test-formats")
-def test_formats():
-    """Test the format configurations."""
-    console.print(Panel("Testing Format Configurations", style="blue"))
+@app.command("config")
+def show_config():
+    """Show current configuration settings."""
+    from config import load_config, load_project_config
 
-    configs = {
-        "Markdown": get_markdown_config(),
-        "JSON": get_json_config(),
-        "YAML": get_yaml_config(),
-        "XML": get_xml_config(),
-    }
+    console.print(Panel("Current Configuration", style="blue"))
 
-    for format_name, config in configs.items():
-        console.print(f"\n[bold]{format_name} Configuration:[/bold]")
-        for key, value in config.__dict__.items():
-            console.print(f"  [cyan]{key}:[/cyan] {value}")
+    # Show user config
+    user_config = load_config()
+    console.print("\n[bold]User Configuration:[/bold]")
+    console.print(f"  [cyan]Selected Model:[/cyan] {user_config.selected_model}")
+
+    token_status = "Set" if user_config.github_token else "Not Set"
+    console.print(f"  [cyan]GitHub Token:[/cyan] {token_status}")
+
+    console.print(
+        f"  [cyan]Default Output Format:[/cyan] {user_config.default_output_format}"
+    )
+    console.print(
+        f"  [cyan]Default Output Directory:[/cyan] {user_config.default_output_directory}"
+    )
+
+    # Show project config
+    project_config = load_project_config()
+    if project_config:
+        console.print("\n[bold]Project Configuration:[/bold]")
+
+        formats = ", ".join(project_config.get("formats", {}).keys())
+        console.print(f"  [cyan]Available Formats:[/cyan] {formats}")
+
+        models = project_config.get("available_models", [])
+        console.print(
+            f"  [cyan]Available Models:[/cyan] {len(models)} models configured"
+        )
+    else:
+        console.print(
+            "\n[yellow]Project configuration (config.yaml) not found.[/yellow]"
+        )
 
 
 def main():
     """Entry point that calls the app"""
+    # Initialize configuration system
+    initialize_config()
     app()
     return 0
 

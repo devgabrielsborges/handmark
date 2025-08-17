@@ -2,6 +2,7 @@ import os
 import re
 import json
 import yaml
+import time
 import xml.etree.ElementTree as ET
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import (
@@ -13,6 +14,11 @@ from azure.ai.inference.models import (
     ImageDetailLevel,
 )
 from azure.core.credentials import AzureKeyCredential
+from azure.core.exceptions import (
+    HttpResponseError,
+    ServiceRequestTimeoutError,
+    ServiceResponseError,
+)
 from models.json import get_json_config
 from models.markdown import get_markdown_config
 from models.xml import get_xml_config
@@ -31,14 +37,14 @@ class ImageDissector:
         self.output_format = output_format.lower()
         self.format_config = self._get_format_config()
 
-        raw_token = os.getenv("GITHUB_TOKEN")
-        if raw_token:
-            self._token = raw_token.strip()
-        else:
-            self._token = None
+        from config import get_github_token
+
+        self._token = get_github_token()
 
         if not self._token:
-            raise ValueError("GITHUB_TOKEN was not found in environment.")
+            raise ValueError(
+                "GITHUB_TOKEN was not found in environment or configuration."
+            )
         self._model_name = model
 
         self._client = ChatCompletionsClient(
@@ -86,29 +92,63 @@ class ImageDissector:
         return f"{name}{extension}"
 
     def get_response(self) -> str:
+        """Get AI response with retry logic and better error handling"""
         system_message_content = self.format_config.system_message_content
         user_message_text = self.format_config.user_message_content
-
-        response = self._client.complete(
-            messages=[
-                SystemMessage(content=system_message_content),
-                UserMessage(
-                    content=[
-                        TextContentItem(text=user_message_text),
-                        ImageContentItem(
-                            image_url=ImageUrl.load(
-                                image_file=self.image_path,
-                                image_format=self.image_format,
-                                detail=ImageDetailLevel.LOW,
-                            )
+        
+        max_retries = 3
+        base_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                response = self._client.complete(
+                    messages=[
+                        SystemMessage(content=system_message_content),
+                        UserMessage(
+                            content=[
+                                TextContentItem(text=user_message_text),
+                                ImageContentItem(
+                                    image_url=ImageUrl.load(
+                                        image_file=self.image_path,
+                                        image_format=self.image_format,
+                                        detail=ImageDetailLevel.LOW,
+                                    )
+                                ),
+                            ],
                         ),
                     ],
-                ),
-            ],
-            model=self._model_name,
-        )
-
-        return response.choices[0].message.content
+                    model=self._model_name,
+                )
+                
+                return response.choices[0].message.content
+                
+            except (HttpResponseError, ServiceRequestTimeoutError,
+                    ServiceResponseError) as e:
+                if attempt == max_retries - 1:  # Last attempt
+                    if "Read timed out" in str(e) or "timeout" in str(e).lower():
+                        raise TimeoutError(
+                            f"Request timed out after {max_retries} attempts. "
+                            "The API might be experiencing high load. "
+                            "Please try again later."
+                        ) from e
+                    elif "Unauthorized" in str(e):
+                        raise ValueError(
+                            "Authentication failed. Please check your GitHub token "
+                            "with 'handmark auth'."
+                        ) from e
+                    else:
+                        raise RuntimeError(f"API request failed: {str(e)}") from e
+                
+                delay = base_delay * (2 ** attempt)
+                time.sleep(delay)
+                
+            except Exception as e:
+                # For any other unexpected errors
+                if attempt == max_retries - 1:
+                    raise RuntimeError(f"Unexpected error occurred: {str(e)}") from e
+                
+                delay = base_delay * (2 ** attempt)
+                time.sleep(delay)
 
     def _process_content(self, raw_content: str) -> str:
         """Process the raw content based on the output format"""
