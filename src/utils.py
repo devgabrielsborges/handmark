@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from rich.console import Console
 from rich.panel import Panel
@@ -46,6 +46,54 @@ def validate_image_path(image_path: Optional[Path]) -> Tuple[bool, Optional[str]
         return False, f"Image file not found at {image_path}"
 
     return True, None
+
+
+def check_ollama_service() -> bool:
+    """Check if Ollama service is available.
+    
+    Returns:
+        bool: True if Ollama service is running
+    """
+    try:
+        import ollama
+        client = ollama.Client()
+        client.list()
+        return True
+    except Exception:
+        return False
+
+
+def list_ollama_models() -> List[str]:
+    """Get list of locally installed Ollama models.
+    
+    Returns:
+        List[str]: List of available model names
+    """
+    try:
+        import ollama
+        client = ollama.Client()
+        response = client.list()
+        models = []
+        for model in response.get('models', []):
+            if hasattr(model, 'model'):
+                models.append(model.model)
+            elif isinstance(model, dict) and 'name' in model:
+                models.append(model['name'])
+        return models
+    except Exception:
+        return []
+
+
+def validate_ollama_model(model_name: str) -> bool:
+    """Validate that an Ollama model is available locally.
+    
+    Args:
+        model_name: Name of the model to validate
+        
+    Returns:
+        bool: True if model is available
+    """
+    return model_name in list_ollama_models()
 
 
 def validate_github_token() -> Tuple[bool, Optional[str], Optional[str]]:
