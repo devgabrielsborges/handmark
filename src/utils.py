@@ -1,31 +1,21 @@
-import os
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from rich.console import Console
 from rich.panel import Panel
-from dotenv import load_dotenv
 
 console = Console()
 
 
 def load_github_token() -> Optional[str]:
-    """Load GitHub token from environment or .env file"""
-    github_token_env = os.getenv("GITHUB_TOKEN")
+    """Load GitHub token from environment or configuration file (legacy function)"""
+    from config import get_github_token
 
-    if not github_token_env:
-        project_dir = Path(__file__).parent.parent
-        dotenv_path = project_dir / ".env"
-
-        if dotenv_path.exists():
-            load_dotenv(dotenv_path)
-            github_token_env = os.getenv("GITHUB_TOKEN")
-
-    return github_token_env
+    return get_github_token()
 
 
 def save_github_token(token: str) -> Tuple[bool, str]:
-    """Save GitHub token to .env file
+    """Save GitHub token to configuration file
 
     Returns:
         Tuple[bool, str]: Success status and message
@@ -33,16 +23,14 @@ def save_github_token(token: str) -> Tuple[bool, str]:
     if not token:
         return False, "No token provided"
 
-    cleaned_token = token.strip()
-    project_dir = Path(__file__).parent.parent
-    env_path = project_dir / ".env"
+    from config import save_github_token as config_save_token
 
-    try:
-        with open(env_path, "w") as f:
-            f.write(f"GITHUB_TOKEN={cleaned_token}\n")
-        return True, str(env_path)
-    except OSError as e:
-        return False, f"Error writing file at {env_path}: {e}"
+    success = config_save_token(token)
+
+    if success:
+        return True, "Token saved to configuration"
+    else:
+        return False, "Error saving token to configuration"
 
 
 def validate_image_path(image_path: Optional[Path]) -> Tuple[bool, Optional[str]]:
@@ -60,6 +48,56 @@ def validate_image_path(image_path: Optional[Path]) -> Tuple[bool, Optional[str]
     return True, None
 
 
+def check_ollama_service() -> bool:
+    """Check if Ollama service is available.
+
+    Returns:
+        bool: True if Ollama service is running
+    """
+    try:
+        import ollama
+
+        client = ollama.Client()
+        client.list()
+        return True
+    except Exception:
+        return False
+
+
+def list_ollama_models() -> List[str]:
+    """Get list of locally installed Ollama models.
+
+    Returns:
+        List[str]: List of available model names
+    """
+    try:
+        import ollama
+
+        client = ollama.Client()
+        response = client.list()
+        models = []
+        for model in response.get("models", []):
+            if hasattr(model, "model"):
+                models.append(model.model)
+            elif isinstance(model, dict) and "name" in model:
+                models.append(model["name"])
+        return models
+    except Exception:
+        return []
+
+
+def validate_ollama_model(model_name: str) -> bool:
+    """Validate that an Ollama model is available locally.
+
+    Args:
+        model_name: Name of the model to validate
+
+    Returns:
+        bool: True if model is available
+    """
+    return model_name in list_ollama_models()
+
+
 def validate_github_token() -> Tuple[bool, Optional[str], Optional[str]]:
     """Validate GitHub token exists
 
@@ -74,7 +112,7 @@ def validate_github_token() -> Tuple[bool, Optional[str], Optional[str]]:
             "not found in project directory."
         )
         guidance = (
-            "Please set it, use 'handmark conf', or ensure .env file "
+            "Please set it, use 'handmark auth', or ensure .env file "
             "exists and is readable."
         )
         return False, error, guidance
