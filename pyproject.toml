@@ -32,5 +32,8 @@ dev = [
     "flake8>=7.3.0",
 ]
 
+[tool.setuptools]
+py-modules = ["main"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
