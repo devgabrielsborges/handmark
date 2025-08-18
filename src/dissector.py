@@ -68,18 +68,18 @@ class ImageDissector:
         """Get AI response using the configured provider"""
         system_message_content = self.format_config.system_message_content
         user_message_text = self.format_config.user_message_content
-        
+
         model_name = (
             self._model.ollama_model_name
             if self._model.ollama_model_name
             else self._model.name
         )
-        
+
         return self._provider.get_response(
             image_path=self.image_path,
             system_message=system_message_content,
             user_message=user_message_text,
-            model_name=model_name
+            model_name=model_name,
         )
 
     def _process_content(self, raw_content: str) -> str:

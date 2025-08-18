@@ -17,16 +17,13 @@ class OllamaProvider(BaseProvider):
         """Initialize Ollama client."""
         try:
             import ollama
+
             self._client = ollama.Client()
         except ImportError:
             self._client = None
 
     def get_response(
-        self,
-        image_path: str,
-        system_message: str,
-        user_message: str,
-        model_name: str
+        self, image_path: str, system_message: str, user_message: str, model_name: str
     ) -> str:
         """Get AI response using Ollama service."""
         if not self._client:
@@ -41,25 +38,18 @@ class OllamaProvider(BaseProvider):
 
         # Read and encode image
         with open(image_path, "rb") as image_file:
-            image_data = base64.b64encode(image_file.read()).decode('utf-8')
+            image_data = base64.b64encode(image_file.read()).decode("utf-8")
 
         try:
             response = self._client.chat(
                 model=model_name,
                 messages=[
-                    {
-                        'role': 'system',
-                        'content': system_message
-                    },
-                    {
-                        'role': 'user',
-                        'content': user_message,
-                        'images': [image_data]
-                    }
-                ]
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": user_message, "images": [image_data]},
+                ],
             )
 
-            return response['message']['content']
+            return response["message"]["content"]
 
         except Exception as e:
             if "model not found" in str(e).lower():
@@ -108,11 +98,10 @@ class OllamaProvider(BaseProvider):
             try:
                 local_models = self._client.list()
                 local_model_names = {
-                    model['name'] for model in local_models.get('models', [])
+                    model["name"] for model in local_models.get("models", [])
                 }
                 return [
-                    model for model in ollama_models
-                    if model.name in local_model_names
+                    model for model in ollama_models if model.name in local_model_names
                 ]
             except Exception:
                 # If we can't check local models, return the full list
@@ -141,11 +130,11 @@ class OllamaProvider(BaseProvider):
             response = self._client.list()
             # Handle both old dict format and new Model object format
             models = []
-            for model in response.get('models', []):
-                if hasattr(model, 'model'):
+            for model in response.get("models", []):
+                if hasattr(model, "model"):
                     models.append(model.model)
-                elif isinstance(model, dict) and 'name' in model:
-                    models.append(model['name'])
+                elif isinstance(model, dict) and "name" in model:
+                    models.append(model["name"])
             return models
         except Exception:
             return []

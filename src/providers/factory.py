@@ -43,7 +43,6 @@ def get_best_available_provider(preferred_model: Model = None) -> BaseProvider:
         else:
             # Fallback to Azure if Ollama is not available
             return AzureProvider()
-    
+
     # Default to Azure provider
     return AzureProvider()
-

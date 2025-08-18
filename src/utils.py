@@ -50,12 +50,13 @@ def validate_image_path(image_path: Optional[Path]) -> Tuple[bool, Optional[str]
 
 def check_ollama_service() -> bool:
     """Check if Ollama service is available.
-    
+
     Returns:
         bool: True if Ollama service is running
     """
     try:
         import ollama
+
         client = ollama.Client()
         client.list()
         return True
@@ -65,20 +66,21 @@ def check_ollama_service() -> bool:
 
 def list_ollama_models() -> List[str]:
     """Get list of locally installed Ollama models.
-    
+
     Returns:
         List[str]: List of available model names
     """
     try:
         import ollama
+
         client = ollama.Client()
         response = client.list()
         models = []
-        for model in response.get('models', []):
-            if hasattr(model, 'model'):
+        for model in response.get("models", []):
+            if hasattr(model, "model"):
                 models.append(model.model)
-            elif isinstance(model, dict) and 'name' in model:
-                models.append(model['name'])
+            elif isinstance(model, dict) and "name" in model:
+                models.append(model["name"])
         return models
     except Exception:
         return []
@@ -86,10 +88,10 @@ def list_ollama_models() -> List[str]:
 
 def validate_ollama_model(model_name: str) -> bool:
     """Validate that an Ollama model is available locally.
-    
+
     Args:
         model_name: Name of the model to validate
-        
+
     Returns:
         bool: True if model is available
     """

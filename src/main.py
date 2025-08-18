@@ -72,7 +72,7 @@ def handle_auth():
 def configure_model():
     """Configure the AI model to use for processing images."""
     from utils import check_ollama_service
-    
+
     console.print(Panel("Model Configuration", style="blue"))
 
     models = get_available_models()
@@ -84,11 +84,11 @@ def configure_model():
 
     azure_models = [m for m in models if m.provider_type == "azure"]
     ollama_models = [m for m in models if m.provider_type == "ollama"]
-    
+
     console.print("[bold]Available models:[/bold]")
     model_list = []
     counter = 1
-    
+
     if azure_models:
         console.print("\n[bold cyan]Azure AI Models (Remote):[/bold cyan]")
         for model in azure_models:
@@ -98,14 +98,15 @@ def configure_model():
             )
             model_list.append(model)
             counter += 1
-    
+
     if ollama_models:
         console.print("\n[bold magenta]Ollama Models (Local):[/bold magenta]")
         ollama_available = check_ollama_service()
-        
+
         for model in ollama_models:
             if ollama_available:
                 from utils import validate_ollama_model
+
                 model_name = model.ollama_model_name or model.name
                 if validate_ollama_model(model_name):
                     status = "[green]✓ Available[/green]"
@@ -113,7 +114,7 @@ def configure_model():
                     status = "[yellow]⚠ Not installed[/yellow]"
             else:
                 status = "[red]✗ Service not running[/red]"
-                
+
             console.print(
                 f"  {counter}. {model.pretty_name} | {model.provider} | {status}"
             )
@@ -127,7 +128,7 @@ def configure_model():
             model_index = int(selection) - 1
             if 0 <= model_index < len(model_list):
                 selected_model = model_list[model_index]
-                
+
                 if selected_model.provider_type == "ollama":
                     if not check_ollama_service():
                         console.print("[red]✗ Ollama service is not running![/red]")
@@ -135,9 +136,10 @@ def configure_model():
                             "[yellow]Please start Ollama service first.[/yellow]"
                         )
                         return
-                    
+
                     model_name = selected_model.ollama_model_name or selected_model.name
                     from utils import validate_ollama_model
+
                     if not validate_ollama_model(model_name):
                         console.print(
                             f"[red]✗ Model '{model_name}' is not installed![/red]"
@@ -169,17 +171,17 @@ def test_connection():
     """Test connection to the AI service."""
     from config import get_github_token, get_selected_model
     from model import get_default_model
-    
+
     console.print(Panel("Testing AI Service Connection", style="blue"))
-    
+
     token = get_github_token()
     if not token:
         console.print("[red]✗ No GitHub token found[/red]")
         console.print("[yellow]Run 'handmark auth' to configure your token[/yellow]")
         raise typer.Exit(code=1)
-    
+
     console.print("[green]✓ GitHub token found[/green]")
-    
+
     selected_model = get_selected_model()
     if not selected_model:
         selected_model = get_default_model()
@@ -190,25 +192,29 @@ def test_connection():
     try:
         from azure.ai.inference import ChatCompletionsClient
         from azure.core.credentials import AzureKeyCredential
-        from azure.ai.inference.models import SystemMessage, UserMessage, TextContentItem
-        
+        from azure.ai.inference.models import (
+            SystemMessage,
+            UserMessage,
+            TextContentItem,
+        )
+
         client = ChatCompletionsClient(
             endpoint="https://models.github.ai/inference",
             credential=AzureKeyCredential(token),
         )
-        
+
         console.print("[yellow]Testing connection to AI service...[/yellow]")
-        
+
         response = client.complete(
             messages=[
                 SystemMessage(content="You are a helpful assistant."),
-                UserMessage(content=[
-                    TextContentItem(text="Hello, respond with just 'OK'")
-                ]),
+                UserMessage(
+                    content=[TextContentItem(text="Hello, respond with just 'OK'")]
+                ),
             ],
             model=selected_model.name,
         )
-        
+
         if response and response.choices:
             console.print("[green]✓ Connection successful![/green]")
             console.print(f"[green]✓ Model {selected_model.name} is responding[/green]")
@@ -216,7 +222,7 @@ def test_connection():
         else:
             console.print("[red]✗ Empty response from service[/red]")
             raise typer.Exit(code=1)
-            
+
     except Exception as e:
         console.print(f"[red]✗ Connection failed: {str(e)}[/red]")
         if "timeout" in str(e).lower():
@@ -228,7 +234,9 @@ def test_connection():
                 "[yellow]💡 Authentication failed - check your GitHub token[/yellow]"
             )
         else:
-            console.print("[yellow]💡 Service might be temporarily unavailable[/yellow]")
+            console.print(
+                "[yellow]💡 Service might be temporarily unavailable[/yellow]"
+            )
         raise typer.Exit(code=1)
 
 
@@ -384,9 +392,9 @@ def status():
     """Check provider availability and configuration status."""
     from providers.azure_provider import AzureProvider
     from utils import check_ollama_service, list_ollama_models
-    
+
     console.print(Panel("Provider Status", style="blue"))
-    
+
     # Check Azure provider
     console.print("[bold]Azure AI Provider:[/bold]")
     azure_provider = AzureProvider()
@@ -399,9 +407,9 @@ def status():
     else:
         console.print("  [red]✗ GitHub token not configured[/red]")
         console.print("  [yellow]  Run 'handmark auth' to configure[/yellow]")
-    
+
     console.print()
-    
+
     # Check Ollama provider
     console.print("[bold]Ollama Provider:[/bold]")
     if check_ollama_service():
@@ -411,9 +419,11 @@ def status():
             console.print(
                 f"  [green]✓ {len(local_models)} models available locally[/green]"
             )
-            vision_models = [m for m in local_models if any(
-                pattern in m.lower() for pattern in ['llava', 'llama3.2-vision']
-            )]
+            vision_models = [
+                m
+                for m in local_models
+                if any(pattern in m.lower() for pattern in ["llava", "llama3.2-vision"])
+            ]
             if vision_models:
                 console.print("  [green]✓ Vision models available[/green]")
                 for model in vision_models:
@@ -428,9 +438,9 @@ def status():
         console.print(
             "  [yellow]  Install and start Ollama from: https://ollama.com[/yellow]"
         )
-    
+
     console.print()
-    
+
     selected_model = get_selected_model()
     if selected_model:
         console.print(f"[bold]Current Model:[/bold] {selected_model.pretty_name}")

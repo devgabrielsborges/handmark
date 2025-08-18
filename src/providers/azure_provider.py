@@ -41,11 +41,7 @@ class AzureProvider(BaseProvider):
             )
 
     def get_response(
-        self,
-        image_path: str,
-        system_message: str,
-        user_message: str,
-        model_name: str
+        self, image_path: str, system_message: str, user_message: str, model_name: str
     ) -> str:
         """Get AI response using Azure AI service."""
         if not self._client:
@@ -80,8 +76,11 @@ class AzureProvider(BaseProvider):
 
                 return response.choices[0].message.content
 
-            except (HttpResponseError, ServiceRequestTimeoutError,
-                    ServiceResponseError) as e:
+            except (
+                HttpResponseError,
+                ServiceRequestTimeoutError,
+                ServiceResponseError,
+            ) as e:
                 if attempt == max_retries - 1:  # Last attempt
                     if "Read timed out" in str(e) or "timeout" in str(e).lower():
                         raise TimeoutError(
@@ -97,7 +96,7 @@ class AzureProvider(BaseProvider):
                     else:
                         raise RuntimeError(f"API request failed: {str(e)}") from e
 
-                delay = base_delay * (2 ** attempt)
+                delay = base_delay * (2**attempt)
                 time.sleep(delay)
 
             except Exception as e:
@@ -105,7 +104,7 @@ class AzureProvider(BaseProvider):
                 if attempt == max_retries - 1:
                     raise RuntimeError(f"Unexpected error occurred: {str(e)}") from e
 
-                delay = base_delay * (2 ** attempt)
+                delay = base_delay * (2**attempt)
                 time.sleep(delay)
 
         # This should never be reached, but added for safety
@@ -125,14 +124,16 @@ class AzureProvider(BaseProvider):
         for model_data in models_config:
             # Filter for Azure/remote models (non-Ollama)
             if model_data.get("provider_type", "azure") == "azure":
-                azure_models.append(Model(
-                    name=model_data["name"],
-                    pretty_name=model_data["pretty_name"],
-                    provider=model_data["provider"],
-                    rate_limit=model_data["rate_limit"],
-                    provider_type=model_data.get("provider_type", "azure"),
-                    ollama_model_name=model_data.get("ollama_model_name"),
-                ))
+                azure_models.append(
+                    Model(
+                        name=model_data["name"],
+                        pretty_name=model_data["pretty_name"],
+                        provider=model_data["provider"],
+                        rate_limit=model_data["rate_limit"],
+                        provider_type=model_data.get("provider_type", "azure"),
+                        ollama_model_name=model_data.get("ollama_model_name"),
+                    )
+                )
 
         return azure_models
 
@@ -146,9 +147,9 @@ class AzureProvider(BaseProvider):
             response = self._client.complete(
                 messages=[
                     SystemMessage(content="You are a helpful assistant."),
-                    UserMessage(content=[
-                        TextContentItem(text="Hello, respond with just 'OK'")
-                    ]),
+                    UserMessage(
+                        content=[TextContentItem(text="Hello, respond with just 'OK'")]
+                    ),
                 ],
                 model="microsoft/Phi-3.5-vision-instruct",  # Use a known model
             )
