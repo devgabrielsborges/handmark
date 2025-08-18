@@ -10,11 +10,7 @@ class BaseProvider(ABC):
 
     @abstractmethod
     def get_response(
-        self,
-        image_path: str,
-        system_message: str,
-        user_message: str,
-        model_name: str
+        self, image_path: str, system_message: str, user_message: str, model_name: str
     ) -> str:
         """Get AI response for image processing.
 
