@@ -8,6 +8,8 @@ class Model:
     pretty_name: str
     provider: str
     rate_limit: str
+    provider_type: str = "azure"  # "azure" or "ollama"
+    ollama_model_name: Optional[str] = None
 
     def __str__(self):
         return f"{self.pretty_name} | {self.provider} | {self.rate_limit}"
@@ -18,6 +20,8 @@ class Model:
             "pretty_name": self.pretty_name,
             "provider": self.provider,
             "rate_limit": self.rate_limit,
+            "provider_type": self.provider_type,
+            "ollama_model_name": self.ollama_model_name,
         }
 
     @classmethod
@@ -28,6 +32,8 @@ class Model:
             pretty_name=data.get("pretty_name", data["name"]),
             provider=data["provider"],
             rate_limit=data["rate_limit"],
+            provider_type=data.get("provider_type", "azure"),
+            ollama_model_name=data.get("ollama_model_name"),
         )
 
 
@@ -45,6 +51,8 @@ def get_available_models() -> List[Model]:
                 pretty_name=model_data["pretty_name"],
                 provider=model_data["provider"],
                 rate_limit=model_data["rate_limit"],
+                provider_type=model_data.get("provider_type", "azure"),
+                ollama_model_name=model_data.get("ollama_model_name"),
             )
         )
 
@@ -102,4 +110,6 @@ def get_default_model() -> Model:
         pretty_name=default_config["pretty_name"],
         provider=default_config["provider"],
         rate_limit=default_config["rate_limit"],
+        provider_type=default_config.get("provider_type", "azure"),
+        ollama_model_name=default_config.get("ollama_model_name"),
     )
