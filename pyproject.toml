@@ -1,6 +1,6 @@
 [project]
 name = "handmark"
-version = "0.5.0"
+version = "0.5.1"
 description = "Transform handwritten images into structured documents (Markdown, JSON, YAML, XML)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,3 +31,6 @@ handmark = "main:main"
 dev = [
     "flake8>=7.3.0",
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]

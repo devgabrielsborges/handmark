@@ -39,8 +39,7 @@ def get_config_path() -> Path:
 
 def get_project_config_path() -> Path:
     """Get the path to the project-wide configuration file"""
-    project_dir = Path(__file__).parent.parent
-    return project_dir / "config.yaml"
+    return Path.cwd() / "config.yaml"
 
 
 def load_project_config() -> dict:
