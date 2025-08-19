@@ -1,6 +1,6 @@
 [project]
 name = "handmark"
-version = "0.5.2"
+version = "0.5.2.1"
 description = "Transform handwritten images into structured documents (Markdown, JSON, YAML, XML)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,7 +33,6 @@ dev = [
 ]
 
 [tool.setuptools]
-py-modules = ["main"]
-
-[tool.setuptools.packages.find]
-where = ["src"]
+package-dir = {"" = "src"}
+py-modules = ["config", "dissector", "main", "model", "utils"]
+packages = ["handmark", "models", "providers"]
