@@ -1,0 +1,2340 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Transform handwritten images into structured documents (Markdown, JSON, YAML, XML). Handmark is a Python CLI tool with AI-powered OCR for digitizing handwritten notes.">
+      
+      
+        <meta name="author" content="Gabriel Souza Borges">
+      
+      
+        <link rel="canonical" href="https://devgabrielsborges.github.io/handmark/troubleshooting/">
+      
+      
+        <link rel="prev" href="../configuration/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.5">
+    
+    
+      
+        <title>Troubleshooting - Handmark</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.1357c24d.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+  
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+  
+  <style>:root{}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#troubleshooting" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Handmark" class="md-header__button md-logo" aria-label="Handmark" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Handmark
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Troubleshooting
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Handmark" class="md-nav__button md-logo" aria-label="Handmark" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    Handmark
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-download" viewBox="0 0 24 24"><path d="M12 15V3M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-terminal" viewBox="0 0 24 24"><path d="M12 19h8M4 17l6-6-6-6"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-help-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-help-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-github-token-not-configured-or-invalid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: GitHub token not configured or invalid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-authentication-token-expired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Authentication token expired
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variable-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variable Not Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connection Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-connection-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Connection timeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-network-unreachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Network unreachable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proxy-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proxy Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-no-model-configured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: No model configured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-model-not-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Model not available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-model-rate-limit-exceeded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Model rate limit exceeded
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Image Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Image Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-unsupported-image-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Unsupported image format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-image-file-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Image file not found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poor-recognition-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Poor Recognition Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-too-large" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Image Too Large
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-permission-denied-writing-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Permission denied writing output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#empty-or-invalid-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empty or Invalid Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filename-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filename Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-configuration-file-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Configuration file not found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-invalid-yaml-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Invalid YAML syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platform-specific-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform-Specific Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Platform-Specific Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#macos-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="macOS Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gatekeeper-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gatekeeper Blocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl-certificate-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSL Certificate Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-length-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path Length Limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powershell-execution-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PowerShell Execution Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Linux Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slow-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-more-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting More Help
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting More Help">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-debug-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable Debug Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collect-system-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collect System Information
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-to-get-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Get Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#before-reporting-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Reporting an Issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-good-issue-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a Good Issue Report
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-error-messages-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Error Messages Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-github-token-not-configured-or-invalid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: GitHub token not configured or invalid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-authentication-token-expired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Authentication token expired
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variable-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variable Not Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connection Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-connection-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Connection timeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-network-unreachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Network unreachable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proxy-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proxy Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-no-model-configured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: No model configured
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-model-not-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Model not available
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-model-rate-limit-exceeded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Model rate limit exceeded
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Image Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Image Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-unsupported-image-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Unsupported image format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-image-file-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Image file not found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poor-recognition-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Poor Recognition Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-too-large" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Image Too Large
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-permission-denied-writing-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Permission denied writing output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#empty-or-invalid-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empty or Invalid Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filename-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filename Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-configuration-file-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Configuration file not found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-invalid-yaml-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Invalid YAML syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platform-specific-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform-Specific Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Platform-Specific Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#macos-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="macOS Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gatekeeper-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gatekeeper Blocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl-certificate-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSL Certificate Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-length-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path Length Limit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powershell-execution-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PowerShell Execution Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Linux Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slow-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-more-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting More Help
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting More Help">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-debug-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable Debug Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collect-system-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collect System Information
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-to-get-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Get Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#before-reporting-an-issue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Reporting an Issue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-good-issue-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a Good Issue Report
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-error-messages-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Error Messages Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
+<p>This guide helps you diagnose and resolve common issues when using Handmark. If you don't find your issue here, please <a href="https://github.com/devgabrielsborges/handmark/issues">open an issue</a> on GitHub.</p>
+<h2 id="quick-diagnostics">Quick Diagnostics<a class="headerlink" href="#quick-diagnostics" title="Permanent link">&para;</a></h2>
+<p>Before diving into specific issues, run these diagnostic commands:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Check version</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>handmark<span class="w"> </span>--version
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Check configuration</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>handmark<span class="w"> </span>config
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Check provider status</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>handmark<span class="w"> </span>status
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Test connection</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>handmark<span class="w"> </span>test-connection
+</span></code></pre></div>
+<h2 id="authentication-issues">Authentication Issues<a class="headerlink" href="#authentication-issues" title="Permanent link">&para;</a></h2>
+<h3 id="error-github-token-not-configured-or-invalid">Error: GitHub token not configured or invalid<a class="headerlink" href="#error-github-token-not-configured-or-invalid" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Error: GitHub token not configured or invalid
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Please run &#39;handmark auth&#39; to configure authentication
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p>Run the authentication setup:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>handmark<span class="w"> </span>auth
+</span></code></pre></div>
+</li>
+<li>
+<p>Enter a valid GitHub token when prompted</p>
+</li>
+<li>Verify the token has appropriate permissions</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Getting a GitHub Token</p>
+<p>Visit <a href="https://github.com/settings/tokens">GitHub Settings → Tokens</a> to create a new personal access token. Read access is sufficient for Handmark.</p>
+</div>
+<h3 id="error-authentication-token-expired">Error: Authentication token expired<a class="headerlink" href="#error-authentication-token-expired" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Error: HTTP 401 - Unauthorized
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Authentication token may be expired
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Generate a new GitHub token</li>
+<li>Run <code>handmark auth</code> again</li>
+<li>Enter the new token</li>
+</ol>
+<h3 id="environment-variable-not-found">Environment Variable Not Found<a class="headerlink" href="#environment-variable-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Error: GITHUB_TOKEN environment variable not found
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<p>Check if <code>.env</code> file exists and contains your token:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># View .env file (be careful not to share this!)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>cat<span class="w"> </span>.env
+</span></code></pre></div>
+<p>Should contain:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>your_token_here
+</span></code></pre></div>
+<p>If missing, run <code>handmark auth</code> to create it.</p>
+<h2 id="connection-issues">Connection Issues<a class="headerlink" href="#connection-issues" title="Permanent link">&para;</a></h2>
+<h3 id="error-connection-timeout">Error: Connection timeout<a class="headerlink" href="#error-connection-timeout" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>HTTPSConnectionPool(host=&#39;models.github.ai&#39;, port=443): Read timed out
+</span></code></pre></div>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Slow internet connection</li>
+<li>AI service experiencing high load</li>
+<li>Firewall or proxy blocking connection</li>
+<li>Image too large for processing</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Solution 1: Retry</label><label for="__tabbed_1_2">Solution 2: Check Connection</label><label for="__tabbed_1_3">Solution 3: Use Local Processing</label><label for="__tabbed_1_4">Solution 4: Reduce Image Size</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Wait a few minutes and try again. The service may be temporarily overloaded.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Test connection</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>handmark<span class="w"> </span>test-connection
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Check if you can reach the service</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>ping<span class="w"> </span>models.github.ai
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Switch to Ollama for offline processing:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>handmark<span class="w"> </span>set-model
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1"># Select an Ollama model</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Resize large images before processing:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Using ImageMagick</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-resize<span class="w"> </span>2000x2000<span class="se">\&gt;</span><span class="w"> </span>output.jpg
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Process the smaller image</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>handmark<span class="w"> </span>digest<span class="w"> </span>output.jpg
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="error-network-unreachable">Error: Network unreachable<a class="headerlink" href="#error-network-unreachable" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Error: [Errno 101] Network is unreachable
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>Check your internet connection</li>
+<li>Verify network configuration</li>
+<li>Check firewall settings</li>
+<li>Try using a VPN if your network blocks the service</li>
+<li>Use Ollama for offline processing</li>
+</ol>
+<h3 id="proxy-configuration">Proxy Configuration<a class="headerlink" href="#proxy-configuration" title="Permanent link">&para;</a></h3>
+<p>If you're behind a corporate proxy:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Set proxy environment variables</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HTTP_PROXY</span><span class="o">=</span>http://proxy.company.com:8080
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span>http://proxy.company.com:8080
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># Then run handmark</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>handmark<span class="w"> </span>digest<span class="w"> </span>image.jpg
+</span></code></pre></div>
+<h2 id="model-issues">Model Issues<a class="headerlink" href="#model-issues" title="Permanent link">&para;</a></h2>
+<h3 id="error-no-model-configured">Error: No model configured<a class="headerlink" href="#error-no-model-configured" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Warning: No model configured. Using default model
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<p>Select your preferred model:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>handmark<span class="w"> </span>set-model
+</span></code></pre></div>
+<p>This is a warning, not an error. Handmark will use a default model, but explicitly selecting one is recommended.</p>
+<h3 id="error-model-not-available">Error: Model not available<a class="headerlink" href="#error-model-not-available" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Error: Selected model &#39;llama3.2-vision&#39; is not available
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>Ollama service may not be running or model not installed
+</span></code></pre></div>
+<p><strong>Solution for Ollama:</strong></p>
+<ol>
+<li>
+<p><strong>Install Ollama:</strong></p>
+<p>Visit <a href="https://ollama.com">ollama.com</a> and follow installation instructions</p>
+</li>
+<li>
+<p><strong>Start Ollama service:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># macOS/Linux</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>ollama<span class="w"> </span>serve
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># Check if running</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>ollama<span class="w"> </span>list
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Pull the model:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>ollama<span class="w"> </span>pull<span class="w"> </span>llama3.2-vision
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Verify installation:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>handmark<span class="w"> </span>status
+</span></code></pre></div>
+</li>
+</ol>
+<h3 id="error-model-rate-limit-exceeded">Error: Model rate limit exceeded<a class="headerlink" href="#error-model-rate-limit-exceeded" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Error: HTTP 429 - Too Many Requests
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Rate limit exceeded for model
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li><strong>Wait and retry</strong>: Rate limits reset after a period</li>
+<li><strong>Switch models</strong>: Try a different model with <code>handmark set-model</code></li>
+<li><strong>Use Ollama</strong>: No rate limits for local processing</li>
+</ol>
+<h2 id="image-issues">Image Issues<a class="headerlink" href="#image-issues" title="Permanent link">&para;</a></h2>
+<h3 id="error-unsupported-image-format">Error: Unsupported image format<a class="headerlink" href="#error-unsupported-image-format" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Error: Unsupported image format: .heic
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Supported formats: .jpg, .jpeg, .png, .gif, .bmp, .tiff, .webp
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<p>Convert the image to a supported format:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Using ImageMagick</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>convert<span class="w"> </span>input.heic<span class="w"> </span>output.jpg
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Or using Python</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>pip<span class="w"> </span>install<span class="w"> </span>pillow
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from PIL import Image; Image.open(&#39;input.heic&#39;).save(&#39;output.jpg&#39;)&quot;</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="c1"># Then process</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>handmark<span class="w"> </span>digest<span class="w"> </span>output.jpg
+</span></code></pre></div>
+<h3 id="error-image-file-not-found">Error: Image file not found<a class="headerlink" href="#error-image-file-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>Error: Image file not found: path/to/image.jpg
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p><strong>Check file path</strong>: Ensure the path is correct and file exists</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># List files to verify</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>ls<span class="w"> </span>-la<span class="w"> </span>path/to/
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Use absolute path</strong>: Try using the full path</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>handmark<span class="w"> </span>digest<span class="w"> </span>/full/path/to/image.jpg
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Check permissions</strong>: Ensure file is readable</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>chmod<span class="w"> </span>+r<span class="w"> </span>image.jpg
+</span></code></pre></div>
+</li>
+</ol>
+<h3 id="poor-recognition-quality">Poor Recognition Quality<a class="headerlink" href="#poor-recognition-quality" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Handmark produces inaccurate or incomplete results</p>
+<p><strong>Solutions:</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Improve Image Quality</label><label for="__tabbed_2_2">Preprocess Image</label><label for="__tabbed_2_3">Try Different Model</label><label for="__tabbed_2_4">Crop to Content</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ul>
+<li>Use higher resolution (minimum 1200x1600 pixels)</li>
+<li>Ensure good lighting</li>
+<li>Avoid shadows and glare</li>
+<li>Take photo straight-on, not at an angle</li>
+<li>Use high contrast (dark ink on light paper)</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Enhance contrast</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-contrast-stretch<span class="w"> </span><span class="m">0</span><span class="w"> </span>output.jpg
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># Remove noise</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-despeckle<span class="w"> </span>output.jpg
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="c1"># Increase brightness</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-brightness-contrast<span class="w"> </span>10x20<span class="w"> </span>output.jpg
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>handmark<span class="w"> </span>set-model
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="c1"># Try GPT-4o for best accuracy</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Remove unnecessary borders and focus on the content area</p>
+</div>
+</div>
+</div>
+<h3 id="image-too-large">Image Too Large<a class="headerlink" href="#image-too-large" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>Error: Image file size exceeds maximum (10MB)
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<p>Reduce image file size:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Reduce quality</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-quality<span class="w"> </span><span class="m">85</span><span class="w"> </span>output.jpg
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1"># Resize dimensions</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-resize<span class="w"> </span>2000x2000<span class="se">\&gt;</span><span class="w"> </span>output.jpg
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="c1"># Both quality and size</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-resize<span class="w"> </span>2000x2000<span class="se">\&gt;</span><span class="w"> </span>-quality<span class="w"> </span><span class="m">85</span><span class="w"> </span>output.jpg
+</span></code></pre></div>
+<h2 id="output-issues">Output Issues<a class="headerlink" href="#output-issues" title="Permanent link">&para;</a></h2>
+<h3 id="error-permission-denied-writing-output">Error: Permission denied writing output<a class="headerlink" href="#error-permission-denied-writing-output" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>Error: [Errno 13] Permission denied: &#39;output.md&#39;
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p><strong>Check directory permissions:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>ls<span class="w"> </span>-la<span class="w"> </span>output-directory/
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Make directory writable:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>chmod<span class="w"> </span>u+w<span class="w"> </span>output-directory/
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Try different output directory:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>handmark<span class="w"> </span>digest<span class="w"> </span>image.jpg<span class="w"> </span>-o<span class="w"> </span>~/Documents/
+</span></code></pre></div>
+</li>
+</ol>
+<h3 id="empty-or-invalid-output">Empty or Invalid Output<a class="headerlink" href="#empty-or-invalid-output" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Generated file is empty or contains errors</p>
+<p><strong>Debugging steps:</strong></p>
+<ol>
+<li>
+<p><strong>Check file contents:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>cat<span class="w"> </span>output-file.md
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Verify image processing:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>handmark<span class="w"> </span>test-connection
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>handmark<span class="w"> </span>status
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Try different format:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="c1"># Try JSON for structured output</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>handmark<span class="w"> </span>digest<span class="w"> </span>image.jpg<span class="w"> </span>-f<span class="w"> </span>json
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Check logs:</strong></p>
+<p>Enable debug logging:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HANDMARK_LOG_LEVEL</span><span class="o">=</span>DEBUG
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>handmark<span class="w"> </span>digest<span class="w"> </span>image.jpg
+</span></code></pre></div>
+</li>
+</ol>
+<h3 id="filename-issues">Filename Issues<a class="headerlink" href="#filename-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> Generated filename contains special characters or is unreadable</p>
+<p><strong>Solution:</strong></p>
+<p>Specify a custom filename:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>handmark<span class="w"> </span>digest<span class="w"> </span>image.jpg<span class="w"> </span>--filename<span class="w"> </span>custom-name.md
+</span></code></pre></div>
+<p>Or configure title extraction in <code>config.yaml</code>.</p>
+<h2 id="configuration-issues">Configuration Issues<a class="headerlink" href="#configuration-issues" title="Permanent link">&para;</a></h2>
+<h3 id="error-configuration-file-not-found">Error: Configuration file not found<a class="headerlink" href="#error-configuration-file-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>Error: Configuration file &#39;config.yaml&#39; not found
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p><strong>Check working directory:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="nb">pwd</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>ls<span class="w"> </span>-la<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>config
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Reinstall Handmark:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--force-reinstall<span class="w"> </span>handmark
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Create custom config:</strong></p>
+<p>Copy from template or documentation</p>
+</li>
+</ol>
+<h3 id="error-invalid-yaml-syntax">Error: Invalid YAML syntax<a class="headerlink" href="#error-invalid-yaml-syntax" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>Error: Error parsing config.yaml at line 15
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>yaml.scanner.ScannerError: mapping values are not allowed here
+</span></code></pre></div>
+<p><strong>Solution:</strong></p>
+<ol>
+<li>
+<p><strong>Validate YAML:</strong></p>
+<p>Use an online YAML validator or:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import yaml; yaml.safe_load(open(&#39;config.yaml&#39;))&quot;</span>
+</span></code></pre></div>
+</li>
+<li>
+<p><strong>Common YAML issues:</strong></p>
+<ul>
+<li>Incorrect indentation (use spaces, not tabs)</li>
+<li>Missing colons after keys</li>
+<li>Unquoted special characters</li>
+<li>Mismatched brackets/quotes</li>
+</ul>
+</li>
+<li>
+<p><strong>Reset to default:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="c1"># Backup your config</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>mv<span class="w"> </span>config.yaml<span class="w"> </span>config.yaml.backup
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a><span class="c1"># Reinstall to get default</span>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>pip<span class="w"> </span>install<span class="w"> </span>--force-reinstall<span class="w"> </span>handmark
+</span></code></pre></div>
+</li>
+</ol>
+<h2 id="platform-specific-issues">Platform-Specific Issues<a class="headerlink" href="#platform-specific-issues" title="Permanent link">&para;</a></h2>
+<h3 id="macos-issues">macOS Issues<a class="headerlink" href="#macos-issues" title="Permanent link">&para;</a></h3>
+<h4 id="gatekeeper-blocking">Gatekeeper Blocking<a class="headerlink" href="#gatekeeper-blocking" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> macOS prevents Handmark from running</p>
+<p><strong>Solution:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># Allow Handmark to run</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>xattr<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span><span class="k">$(</span>which<span class="w"> </span>handmark<span class="k">)</span>
+</span></code></pre></div>
+<h4 id="ssl-certificate-errors">SSL Certificate Errors<a class="headerlink" href="#ssl-certificate-errors" title="Permanent link">&para;</a></h4>
+<p><strong>Solution:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="c1"># Install certificates</span>
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>/Applications/Python<span class="se">\ </span><span class="m">3</span>.x/Install<span class="se">\ </span>Certificates.command
+</span></code></pre></div>
+<h3 id="windows-issues">Windows Issues<a class="headerlink" href="#windows-issues" title="Permanent link">&para;</a></h3>
+<h4 id="path-length-limit">Path Length Limit<a class="headerlink" href="#path-length-limit" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> Errors with long file paths</p>
+<p><strong>Solution:</strong></p>
+<p>Enable long paths in Windows:</p>
+<ol>
+<li>Run as Administrator: <code>gpedit.msc</code></li>
+<li>Navigate to: Local Computer Policy → Computer Configuration → Administrative Templates → System → Filesystem</li>
+<li>Enable "Enable Win32 long paths"</li>
+</ol>
+<h4 id="powershell-execution-policy">PowerShell Execution Policy<a class="headerlink" href="#powershell-execution-policy" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> Cannot run handmark in PowerShell</p>
+<p><strong>Solution:</strong></p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="nb">Set-ExecutionPolicy</span> <span class="n">-ExecutionPolicy</span> <span class="n">RemoteSigned</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span>
+</span></code></pre></div>
+<h3 id="linux-issues">Linux Issues<a class="headerlink" href="#linux-issues" title="Permanent link">&para;</a></h3>
+<h4 id="missing-dependencies">Missing Dependencies<a class="headerlink" href="#missing-dependencies" title="Permanent link">&para;</a></h4>
+<p><strong>Solution:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="c1"># Debian/Ubuntu</span>
+</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>python3-pip
+</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a>
+</span><span id="__span-48-4"><a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a><span class="c1"># Fedora/RHEL</span>
+</span><span id="__span-48-5"><a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>python3-devel<span class="w"> </span>python3-pip
+</span><span id="__span-48-6"><a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a>
+</span><span id="__span-48-7"><a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a><span class="c1"># Arch</span>
+</span><span id="__span-48-8"><a id="__codelineno-48-8" name="__codelineno-48-8" href="#__codelineno-48-8"></a>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>python<span class="w"> </span>python-pip
+</span></code></pre></div>
+<h2 id="performance-issues">Performance Issues<a class="headerlink" href="#performance-issues" title="Permanent link">&para;</a></h2>
+<h3 id="slow-processing">Slow Processing<a class="headerlink" href="#slow-processing" title="Permanent link">&para;</a></h3>
+<p><strong>Causes and solutions:</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Large Images</label><label for="__tabbed_3_2">Slow Internet</label><label for="__tabbed_3_3">Complex Content</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Resize images before processing:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>convert<span class="w"> </span>input.jpg<span class="w"> </span>-resize<span class="w"> </span>2000x2000<span class="se">\&gt;</span><span class="w"> </span>output.jpg
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Use Ollama for local processing:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>handmark<span class="w"> </span>set-model
+</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="c1"># Select Ollama model</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Complex mathematical notation or tables may take longer. This is normal.</p>
+</div>
+</div>
+</div>
+<h3 id="high-memory-usage">High Memory Usage<a class="headerlink" href="#high-memory-usage" title="Permanent link">&para;</a></h3>
+<p><strong>Solution:</strong></p>
+<p>Process images one at a time, or increase system memory.</p>
+<h2 id="getting-more-help">Getting More Help<a class="headerlink" href="#getting-more-help" title="Permanent link">&para;</a></h2>
+<h3 id="enable-debug-logging">Enable Debug Logging<a class="headerlink" href="#enable-debug-logging" title="Permanent link">&para;</a></h3>
+<p>Get detailed information about what's happening:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HANDMARK_LOG_LEVEL</span><span class="o">=</span>DEBUG
+</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>handmark<span class="w"> </span>digest<span class="w"> </span>image.jpg<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>debug.log
+</span></code></pre></div>
+<p>Share <code>debug.log</code> when reporting issues.</p>
+<h3 id="collect-system-information">Collect System Information<a class="headerlink" href="#collect-system-information" title="Permanent link">&para;</a></h3>
+<p>When reporting issues, include:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># System info</span>
+</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>uname<span class="w"> </span>-a
+</span><span id="__span-52-3"><a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
+</span><span id="__span-52-4"><a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Python version</span>
+</span><span id="__span-52-5"><a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>python<span class="w"> </span>--version
+</span><span id="__span-52-6"><a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a>
+</span><span id="__span-52-7"><a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a><span class="c1"># Handmark version</span>
+</span><span id="__span-52-8"><a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a>handmark<span class="w"> </span>--version
+</span><span id="__span-52-9"><a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a>
+</span><span id="__span-52-10"><a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a><span class="c1"># Handmark status</span>
+</span><span id="__span-52-11"><a id="__codelineno-52-11" name="__codelineno-52-11" href="#__codelineno-52-11"></a>handmark<span class="w"> </span>status
+</span><span id="__span-52-12"><a id="__codelineno-52-12" name="__codelineno-52-12" href="#__codelineno-52-12"></a>
+</span><span id="__span-52-13"><a id="__codelineno-52-13" name="__codelineno-52-13" href="#__codelineno-52-13"></a><span class="c1"># pip list</span>
+</span><span id="__span-52-14"><a id="__codelineno-52-14" name="__codelineno-52-14" href="#__codelineno-52-14"></a>pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>handmark
+</span></code></pre></div>
+<h3 id="where-to-get-help">Where to Get Help<a class="headerlink" href="#where-to-get-help" title="Permanent link">&para;</a></h3>
+<dl>
+<dt><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg></span> <strong>GitHub Issues</strong></dt>
+<dd>
+<p><a href="https://github.com/devgabrielsborges/handmark/issues">github.com/devgabrielsborges/handmark/issues</a></p>
+<p>For bugs, feature requests, and technical problems</p>
+</dd>
+<dt><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c5.5 0 10 3.58 10 8s-4.5 8-10 8c-1.24 0-2.43-.18-3.53-.5C5.55 21 2 21 2 21c2.33-2.33 2.7-3.9 2.75-4.5C3.05 15.07 2 13.13 2 11c0-4.42 4.5-8 10-8"/></svg></span> <strong>Discussions</strong></dt>
+<dd>
+<p><a href="https://github.com/devgabrielsborges/handmark/discussions">github.com/devgabrielsborges/handmark/discussions</a></p>
+<p>For questions, ideas, and community support</p>
+</dd>
+<dt><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 22a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-6v7L9.5 7.5 7 9V2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z"/></svg></span> <strong>Documentation</strong></dt>
+<dd>
+<p><a href="../">Read the full docs</a></p>
+<p>Comprehensive guides and references</p>
+</dd>
+</dl>
+<h3 id="before-reporting-an-issue">Before Reporting an Issue<a class="headerlink" href="#before-reporting-an-issue" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Check this troubleshooting guide</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Search existing GitHub issues</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update to the latest version</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Try with a simple test image</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Collect debug logs</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Document steps to reproduce</li>
+</ul>
+<h3 id="creating-a-good-issue-report">Creating a Good Issue Report<a class="headerlink" href="#creating-a-good-issue-report" title="Permanent link">&para;</a></h3>
+<p>Include:</p>
+<ol>
+<li><strong>Handmark version</strong> (<code>handmark --version</code>)</li>
+<li><strong>Operating system</strong> and version</li>
+<li><strong>Python version</strong> (<code>python --version</code>)</li>
+<li><strong>Complete error message</strong> (with stack trace)</li>
+<li><strong>Steps to reproduce</strong> the issue</li>
+<li><strong>Expected behavior</strong> vs actual behavior</li>
+<li><strong>Sample image</strong> (if applicable and not sensitive)</li>
+<li><strong>Debug logs</strong> (<code>HANDMARK_LOG_LEVEL=DEBUG</code>)</li>
+</ol>
+<h2 id="common-error-messages-reference">Common Error Messages Reference<a class="headerlink" href="#common-error-messages-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Meaning</th>
+<th>Quick Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GitHub token not configured</code></td>
+<td>Authentication not set up</td>
+<td>Run <code>handmark auth</code></td>
+</tr>
+<tr>
+<td><code>Connection timeout</code></td>
+<td>Network or service issue</td>
+<td>Retry or use Ollama</td>
+</tr>
+<tr>
+<td><code>Unsupported image format</code></td>
+<td>Image format not supported</td>
+<td>Convert to JPG/PNG</td>
+</tr>
+<tr>
+<td><code>Model not available</code></td>
+<td>Ollama model not installed</td>
+<td>Run <code>ollama pull model-name</code></td>
+</tr>
+<tr>
+<td><code>Rate limit exceeded</code></td>
+<td>Too many requests</td>
+<td>Wait or switch models</td>
+</tr>
+<tr>
+<td><code>Permission denied</code></td>
+<td>File permission issue</td>
+<td>Check directory permissions</td>
+</tr>
+<tr>
+<td><code>Configuration file not found</code></td>
+<td>Missing config.yaml</td>
+<td>Reinstall Handmark</td>
+</tr>
+<tr>
+<td><code>Invalid YAML syntax</code></td>
+<td>Config file error</td>
+<td>Validate YAML syntax</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.74 3.74 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574M8.755 4.75l-.004 7.322a3.75 3.75 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25"/></svg></span> <strong><a href="../usage/">Usage Guide</a></strong></dt>
+<dd>Learn all commands and options</dd>
+<dt><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M8 0a8 8 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224q.347.171.668.386c.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63q.406.578.704 1.218c.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294q.024.386 0 .772c-.01.147.038.246.088.294l.814.806c.475.469.679 1.216.364 1.891a8 8 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a6 6 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8 8 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a6 6 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8 8 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.05-.048.098-.147.088-.294a6 6 0 0 1 0-.772c.01-.147-.038-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a8 8 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071q.321-.215.668-.386c.133-.066.194-.158.211-.224l.29-1.106C6.009.645 6.556.095 7.299.03Q7.646 0 8 0m-.571 1.525c-.036.003-.108.036-.137.146l-.289 1.105c-.147.561-.549.967-.998 1.189q-.26.13-.5.29c-.417.278-.97.423-1.529.27l-1.103-.303c-.109-.03-.175.016-.195.045q-.33.47-.573.99c-.014.031-.021.11.059.19l.815.806c.411.406.562.957.53 1.456a5 5 0 0 0 0 .582c.032.499-.119 1.05-.53 1.456l-.815.806c-.081.08-.073.159-.059.19q.243.52.573.989c.02.03.085.076.195.046l1.102-.303c.56-.153 1.113-.008 1.53.27q.242.16.501.29c.447.222.85.629.997 1.189l.289 1.105c.029.109.101.143.137.146a6.6 6.6 0 0 0 1.142 0c.036-.003.108-.036.137-.146l.289-1.105c.147-.561.549-.967.998-1.189q.26-.13.5-.29c.417-.278.97-.423 1.529-.27l1.103.303c.109.029.175-.016.195-.045q.33-.47.573-.99c.014-.031.021-.11-.059-.19l-.815-.806c-.411-.406-.562-.957-.53-1.456a5 5 0 0 0 0-.582c-.032-.499.119-1.05.53-1.456l.815-.806c.081-.08.073-.159.059-.19a6.5 6.5 0 0 0-.573-.989c-.02-.03-.085-.076-.195-.046l-1.102.303c-.56.153-1.113.008-1.53-.27a4.4 4.4 0 0 0-.501-.29c-.447-.222-.85-.629-.997-1.189l-.289-1.105c-.029-.11-.101-.143-.137-.146a6.6 6.6 0 0 0-1.142 0M11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0M9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8"/></svg></span> <strong><a href="../configuration/">Configuration</a></strong></dt>
+<dd>Customize Handmark behavior</dd>
+<dt><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.906.664a1.75 1.75 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z"/></svg></span> <strong><a href="../">Back to Home</a></strong></dt>
+<dd>Return to documentation home</dd>
+</dl>
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Configuration">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Configuration
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Gabriel Souza Borges. Licensed under <a href="https://github.com/devgabrielsborges/handmark/blob/main/LICENSE">MIT License</a>.
+
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/devgabrielsborges/handmark" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://pypi.org/project/handmark/" target="_blank" rel="noopener" title="PyPI" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["announce.dismiss","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight"],"search":"../assets/javascripts/workers/search.5e1f2129.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1193bd74.min.js"></script>
+      
+    
+  </body>
+</html>
