@@ -1,1 +1,0 @@
-Use the best practices for writing READMEs. Explain the CLI usage and add [prova](samples/prova.jpeg) and [prova response](prova-response.md) as an example of the result. Write it in [README](README.md). Use [src](src/) as a guide for it. Use the commits for create it
