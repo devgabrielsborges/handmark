@@ -156,12 +156,9 @@ The tool automatically:
        parabólico$z = 1 - y^2$, e pelos planos $z = 0$, $x = 1$, $x = -1$,
        apresente um esboço deste volume e calcule a integral tripla.
 
-
-$$
-\iiint_E x^2e^y dV
-$$
-
-
+    $$
+    \iiint_E x^2e^y dV
+    $$
     ```
 
 
