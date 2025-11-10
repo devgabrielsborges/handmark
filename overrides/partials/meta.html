@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ page.canonical_url }}">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}">
+  <meta property="og:description" content="{% if page.meta.description %}{{ page.meta.description }}{% else %}{{ config.site_description }}{% endif %}">
+  <meta property="og:image" content="https://devgabrielsborges.github.io/handmark/assets/images/prova.jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ page.canonical_url }}">
+  <meta name="twitter:title" content="{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}">
+  <meta name="twitter:description" content="{% if page.meta.description %}{{ page.meta.description }}{% else %}{{ config.site_description }}{% endif %}">
+  <meta name="twitter:image" content="https://devgabrielsborges.github.io/handmark/assets/images/prova.jpeg">
+  <meta name="twitter:creator" content="@devgabrielsborges">
+
+  <!-- Additional SEO -->
+  <meta name="author" content="{{ config.site_author }}">
+  <meta name="keywords" content="handwriting recognition, OCR, AI, machine learning, document digitization, handwritten notes, python, CLI tool, Azure AI, Ollama, markdown, json, yaml, xml">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2196f3">
+  <meta name="msapplication-TileColor" content="#2196f3">
+  
+  {{ super() }}
+{% endblock %}>
+
